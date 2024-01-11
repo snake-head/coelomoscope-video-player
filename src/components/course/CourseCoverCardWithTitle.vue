@@ -5,7 +5,7 @@
         <div class="course-card">
           <CourseCoverCard :course="course"></CourseCoverCard>
           <div class="link-font__outer">
-            <el-link type="default" :href="`/course/${course.courseId}`" :underline="false" target="_blank">
+            <el-link type="default" :href="`/course/${course.courseId}`" :underline="false">
               <div class="link-font">
                 {{ course.courseName }}
               </div>

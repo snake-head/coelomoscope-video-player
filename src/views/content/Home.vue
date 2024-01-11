@@ -53,7 +53,7 @@ const switchCardImages = [
   "https://tse3-mm.cn.bing.net/th/id/OIP-C.zHrHOI1ULHd0iSWTGqd3WAHaDk?w=336&h=168&c=7&r=0&o=5&dpr=1.3&pid=1.7",
   "https://tse1-mm.cn.bing.net/th/id/OIP-C.gKSO2Cw79snhIt_d0m3wVgHaD8?w=309&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7"
 ]
-const homeVideoClassification = ["推荐课程", "最新课程"]
+const homeVideoClassification = ["推荐案例", "最新案例"]
 const recommendedCourses = ref([]);
 const latestCourses = ref([]);
 const getRecommendedCourses = () => {

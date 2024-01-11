@@ -22,7 +22,7 @@
                   <div class="course-type">{{ courseType.label }}</div>
                 </div>
                 <div class="enter-course-btn">
-                  <el-button type="primary" size="large" @click="toCourseDetail(router,courseId)">进入课程</el-button>
+                  <el-button type="primary" size="large" @click="toCourseDetail(router,courseId)">进入案例</el-button>
                 </div>
               </div>
             </div>
@@ -32,8 +32,8 @@
           <div class="course-introduction__left">
             <el-card shadow="never">
               <el-tabs v-model="courseTabActiveName" stretch>
-                <el-tab-pane label="课程简介" name="简介">课程简介</el-tab-pane>
-                <el-tab-pane label="课程评价" name="评价">课程评价</el-tab-pane>
+                <el-tab-pane label="案例简介" name="简介">{{ courseVO.courseDescription }}</el-tab-pane>
+                <el-tab-pane label="案例评价" name="评价">暂无评价</el-tab-pane>
               </el-tabs>
             </el-card>
           </div>
@@ -46,8 +46,8 @@
                     基本信息
                   </span>
                 </template>
-                <el-descriptions-item label="课程名称">{{ courseVO.courseName }}</el-descriptions-item>
-                <el-descriptions-item label="课程分类">{{ courseType.label }}</el-descriptions-item>
+                <el-descriptions-item label="案例名称">{{ courseVO.courseName }}</el-descriptions-item>
+                <el-descriptions-item label="案例分类">{{ courseType.label }}</el-descriptions-item>
                 <el-descriptions-item label="所属科系">{{ courseDeptName }}</el-descriptions-item>
               </el-descriptions>
             </el-card>

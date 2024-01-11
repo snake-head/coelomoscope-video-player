@@ -1,8 +1,16 @@
+<!--
+ * @Description: 
+ * @Version: 1.0
+ * @Autor: ZhuYichen
+ * @Date: 2023-09-01 10:29:26
+ * @LastEditors: ZhuYichen
+ * @LastEditTime: 2023-09-01 10:30:34
+-->
 <template>
   <div class="mt-4">
     <el-row :gutter="20">
       <el-col :span="20" @keydown.enter="confirmClick">
-        <el-input v-model="courseQueryCriteria.courseName" placeholder="输入案例名称以搜索" class="input-with-select" clearable>
+        <el-input v-model="courseQueryCriteria.courseName" placeholder="输入关键字以搜索" class="input-with-select" clearable>
           <template #append>
             <el-button icon="Search" @click="confirmClick" />
           </template>

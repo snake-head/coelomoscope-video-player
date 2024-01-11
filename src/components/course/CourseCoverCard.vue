@@ -1,7 +1,7 @@
 <template>
   <div class="course-card__wrap">
     <div class="course-image">
-      <el-link type="default" :href="`/course/${course.courseId}`" :underline="false" target="_blank">
+      <el-link type="default" :href="`/course/${course.courseId}`" :underline="false">
         <el-image :src="course.courseCoverUrl">
           <template #error>
             <div class="image-slot">

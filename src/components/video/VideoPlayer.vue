@@ -26,7 +26,15 @@ export default {
     defaultQuality: {
       type: Number,
       default: 0
-    }
+    },
+    phase: {
+      type: Object,
+      default: {}
+    },
+    videoId: {
+      type: String,
+      required: true,
+    },
   },
   data() {
     return {
@@ -44,17 +52,11 @@ export default {
           quality: this.quality.length > 0 ? this.quality?.map(item => Object.assign({ type: 'customDash' }, item)) : undefined,
           defaultQuality: this.defaultQuality
         },
-        highlight: [{
-          time: 20,
-          text: '这是第 20 秒',
-        },
-        {
-          time: 120,
-          text: '这是 2 分钟',
-        }],
+        highlight: this.phase,
       },
       isDehazed: false,
       baseQualityIndex: 0,
+      currentPlaybackTime: 0,
     }
   },
   methods: {
@@ -129,6 +131,15 @@ export default {
   },
   mounted() {
     this.customInitDplayer()
+    this.$nextTick(() => {
+      if (this.$refs.dplayer && this.$refs.dplayer.dp) {
+        const player = this.$refs.dplayer.dp;
+        player.on('timeupdate', () => {
+          this.currentPlaybackTime = player.video.currentTime;
+          this.$store.dispatch('updateVideoPlaybackTimes', { videoId: this.videoId, time: player.video.currentTime });
+        });
+      }
+    });
   },
   beforeDestroy() {
     this.dashPlayer?.destroy();

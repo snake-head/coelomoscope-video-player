@@ -1,3 +1,11 @@
+<!--
+ * @Description: 
+ * @Version: 1.0
+ * @Autor: ZhuYichen
+ * @Date: 2023-05-23 15:25:36
+ * @LastEditors: ZhuYichen
+ * @LastEditTime: 2023-08-01 17:53:40
+-->
 <script>
 import DPlayer from 'dplayer'
 import { defineComponent, h } from 'vue'

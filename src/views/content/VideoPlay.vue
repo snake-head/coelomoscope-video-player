@@ -2,7 +2,7 @@
 import VideoCoverCard from "../../components/video/VideoCoverCard.vue";
 import VideoPlayer from "../../components/video/VideoPlayer.vue";
 
-import { onMounted, reactive, ref, watch } from "vue";
+import { onMounted, reactive, ref, watch, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { getCourseByCourseId } from "../../utils/request/course";
 import {
@@ -10,6 +10,13 @@ import {
   getVideosByCourseId,
 } from "../../utils/request/video";
 import { toCourseDetail } from "../../utils/router/routeJumper";
+import { ElSteps, ElStep } from "element-plus";
+import { Panel, Position, VueFlow, isNode, useVueFlow } from '@vue-flow/core'
+import { Background } from '@vue-flow/background'
+import '@vue-flow/core/dist/style.css';
+import { MarkerType } from '@vue-flow/core'
+import { useStore } from 'vuex';
+const store = useStore();
 const route = useRoute();
 const router = useRouter();
 const videoId = route.params.videoId;
@@ -31,6 +38,7 @@ const activeVideo = reactive({
   lastViewedAt: "",
   courseId: "",
   resolutionVersion: [],
+  metadata: {},
 });
 const enforceOptions = reactive({
   isAiIdentify: false,
@@ -39,6 +47,23 @@ const enforceOptions = reactive({
 const activeTabName = ref("讨论");
 const activeVideoQualityList = ref([]);
 const hasDataPrepared = ref(false);
+const playbackProgress = ref(0); // Default value, you can choose a suitable default index.
+
+const videoPlaybackTimes = computed(()=>store.state.videoPlaybackTimes)
+
+watch(() => videoPlaybackTimes, () => {
+  const currentTime = videoPlaybackTimes.value[activeVideo.videoId]
+  const timeList = []
+  timeList.push(0)
+  activeVideo.metadata.phase.forEach(({time})=>{
+    timeList.push(time)
+  })
+  timeList.forEach((time, index)=>{
+    if (currentTime>time){
+      playbackProgress.value = index
+    }
+  })
+},{ deep: true });
 
 onMounted(async () => {
   await getActiveVideo();
@@ -73,6 +98,7 @@ const getActiveVideo = async () => {
         }
       }
     }
+    console.log(activeVideo)
   } catch (err) {
     console.error(err);
   }
@@ -108,19 +134,82 @@ const getActiveVideoCourse = async (courseId) => {
     const course = (await getCourseByCourseId(courseId)).data.results[0];
     activeVideoCourse.courseId = course.courseId;
     activeVideoCourse.courseName = course.courseName;
+    activeVideoCourse.courseDescription = course.courseDescription;
     activeVideoCourse.courseTypeName = course.courseType?.name;
     activeVideoCourse.courseTypeLabel = course.courseType?.label;
   } catch (err) {
     console.error(err);
   }
 };
+const {
+  nodesDraggable,
+  nodesConnectable,
+  elementsSelectable,
+  zoomOnScroll,
+  zoomOnDoubleClick,
+  zoomOnPinch,
+  panOnScroll,
+  panOnScrollMode,
+  panOnDrag,
+  onConnect,
+  onNodeDragStop,
+  onPaneClick,
+  onPaneScroll,
+  onPaneContextMenu,
+  onNodeDragStart,
+  onMoveEnd,
+  addEdges,
+} = useVueFlow()
+
+nodesDraggable.value = false;
+zoomOnScroll.value = false;
+nodesConnectable.value = false;
+zoomOnDoubleClick.value = false;
+panOnScroll.value = false;
+panOnDrag.value = false;
+// elementsSelectable.value = false;
+
+const elements = ref([
+  { id: '1', type: 'input', label: '开始', position: { x: 50, y: 10 }, sourcePosition: Position.Right, class: 'light', style: {backgroundColor: "#caffc9"} },
+  { id: '2', label: '阶段一', position: { x: 250, y: 10 }, sourcePosition: Position.Right, targetPosition: Position.Left, class: 'light', style: {backgroundColor: "#caffc9"} },
+  { id: '3', label: '阶段二', position: { x: 450, y: 10 }, sourcePosition: Position.Right, targetPosition: Position.Left, class: 'light', style: {backgroundColor: "#a9d4ff"} },
+  { id: '4', label: '阶段三', position: { x: 650, y: 10 }, sourcePosition: Position.Right, targetPosition: Position.Left, class: 'light',  },
+  { id: '5', label: '返回', position: { x: 550, y: 110 }, sourcePosition: Position.Left, targetPosition: Position.Right, class: 'light' },
+  { id: '6', type: 'output', label: '结束', position: { x: 850, y: 10 }, targetPosition: Position.Left, class: 'light' },
+  { id: 'e1-2', source: '1', target: '2', style: {  'stroke-width': '2px'}, markerEnd: MarkerType.ArrowClosed},
+  { id: 'e2-3', source: '2', target: '3', style: { 'stroke-width': '2px'}, markerEnd: MarkerType.ArrowClosed},
+  { id: 'e3-4', source: '3', target: '4', animated: true, style: { stroke: '#409eff', 'stroke-width': '3px'}},
+  { id: 'e4-6', source: '4', target: '6', style: { 'stroke-width': '2px'}, markerEnd: MarkerType.ArrowClosed},
+
+  { id: 'e4-5', source: '4', target: '5', type: 'smoothstep', style: { 'stroke-width': '2px'}, markerEnd: MarkerType.ArrowClosed},
+  { id: 'e5-3', source: '5', target: '3', type: 'smoothstep', style: { 'stroke-width': '2px'}, markerEnd: MarkerType.ArrowClosed},
+])
 </script>
 
 <template>
   <div>
     <el-container direction="horizontal">
       <el-aside width="350px">
-        <div class="video-sidebar left-sidebar">
+        <el-card shadow="never">
+            <div class="title-area">
+              <div class="course-name">
+                {{ activeVideoCourse.courseName }}
+              </div>
+              <div class="course-type">
+                {{ activeVideoCourse.courseTypeName }}
+              </div>
+            </div>
+            <div class="video-info">
+              <div class="video-name">
+                {{ activeVideo.videoName }}
+              </div>
+              <div class="operator">
+                <span class="operator__label">主刀医师：</span>
+                <span class="operator__content">刘备</span>
+              </div>
+            </div>
+          </el-card>
+        <div class="video-sidebar left-sidebar-bot">
           <el-card shadow="hover">
             <template #header>
               <div
@@ -131,13 +220,13 @@ const getActiveVideoCourse = async (courseId) => {
                   <el-icon>
                     <ArrowLeft />
                   </el-icon>
-                  <span>返回课程</span>
+                  <span>返回案例</span>
                 </div>
               </div>
             </template>
             <div class="other-videos-bar">
               <el-tag effect="plain" round size="large" style="margin: 8px 0">
-                本课程下视频选集
+                本案例下视频选集
               </el-tag>
               <el-divider />
               <div class="video-display-table">
@@ -162,58 +251,60 @@ const getActiveVideoCourse = async (courseId) => {
             </div>
           </el-card>
         </div>
-      </el-aside>
-      <el-main>
-        <div class="main-container">
-          <el-card shadow="never">
-            <div class="title-area">
-              <div class="course-name">
-                {{ activeVideoCourse.courseName }}
-              </div>
-              <div class="course-type">
-                {{ activeVideoCourse.courseTypeName }}
-              </div>
-            </div>
-            <div class="video-info">
-              <div class="video-name">
-                {{ activeVideo.videoName }}
-              </div>
-              <div class="operator">
-                <span class="operator__label">主刀医师：</span>
-                <span class="operator__content">刘备</span>
-              </div>
-            </div>
-          </el-card>
-          <div class="video-area">
-            <div class="switch-button">
-              <span class="switch-button__item">
-                <el-switch
-                  v-model="enforceOptions.isAiIdentify"
-                  style="--el-switch-on-color: #13ce66"
-                />
-                <span class="switch-option-text">智能识别</span>
-              </span>
-              <span class="switch-button__item">
-                <el-switch
-                  v-model="enforceOptions.isAiDehazy"
-                  style="--el-switch-on-color: #13ce66"
-                />
-                <span class="switch-option-text">去烟雾</span>
-              </span>
-            </div>
-            <VideoPlayer
-              ref="videoPlayer"
-              :quality="activeVideoQualityList"
-              :src="activeVideo.videoUrl"
-              v-if="hasDataPrepared"
-            ></VideoPlayer>
-          </div>
+        <div class="video-sidebar left-sidebar-bot">
           <div class="discussion-area">
             <el-tabs v-model="activeTabName" type="border-card">
               <el-tab-pane label="讨论" name="讨论">讨论区</el-tab-pane>
               <el-tab-pane label="疑问" name="疑问">疑问区</el-tab-pane>
             </el-tabs>
           </div>
+        </div>
+      </el-aside>
+      <el-main class="video-main">
+        <div class="main-container">
+          
+          <div class="video-area">
+            <VideoPlayer
+              ref="videoPlayer"
+              :quality="activeVideoQualityList"
+              :src="activeVideo.videoUrl"
+              :phase="activeVideo.metadata.phase"
+              :videoId="activeVideo.videoId"
+              v-if="hasDataPrepared"
+            ></VideoPlayer>
+          </div>
+          <div class="operation-steps">
+              <div class="step-and-button">
+                <div class="info-header">手术步骤</div>
+                <div class="switch-button">
+                  <span class="switch-button__item">
+                    <el-switch
+                      v-model="enforceOptions.isAiIdentify"
+                      style="--el-switch-on-color: #13ce66"
+                    />
+                    <span class="switch-option-text">智能识别</span>
+                  </span>
+                  <span class="switch-button__item">
+                    <el-switch
+                      v-model="enforceOptions.isAiDehazy"
+                      style="--el-switch-on-color: #13ce66"
+                    />
+                    <span class="switch-option-text">去烟雾</span>
+                  </span>
+                </div>
+              </div>
+              
+              <div class="operation-steps__content content-textaria">
+                <div style="height: 150px">
+                  <!-- <el-steps direction="vertical" :active=playbackProgress>
+                    <el-step v-for="({text}, index) in activeVideo.metadata.phase" :key="index" :title="text" />
+                  </el-steps> -->
+                  <VueFlow v-model="elements" :class="{ dark }" class="basicflow" :default-viewport="{ zoom: 0.8 }" :min-zoom="0.2" :max-zoom="4">
+                    <Background :pattern-color="dark ? '#FFFFFB' : '#aaa'" gap="8" />
+                  </VueFlow>
+                </div>
+              </div>
+            </div>
         </div>
       </el-main>
       <el-aside>
@@ -240,21 +331,10 @@ const getActiveVideoCourse = async (courseId) => {
             <div class="operation-brief">
               <div class="info-header">手术简介</div>
               <div class="operation-brief__content content-textaria">
-                根治性前列腺切除术是指切除前列腺及其周围的精囊、射精管、输精管的一部分，
-                同时察看盆腔淋巴结有无转移并行清扫。手术是唯一可以根治前列腺癌的方法，
-                耻骨后前列腺癌根治术比较常用。
+                {{activeVideoCourse.courseDescription}}
               </div>
             </div>
-            <div class="operation-steps">
-              <div class="info-header">手术步骤</div>
-              <div class="operation-steps__content content-textaria">
-                1. 经尿道插入气囊导尿管并排空膀胱。气囊注水10mL后留置。<br />
-                2.
-                在膀胱颈下方1cm处横行切开前列腺包膜。用止血钳钝性扩大被膜与腺体间距。腺体完全暴露后，用尖刀纵切前列腺联合部,接近前列腺底部的尿道表面时.用止血钳钝性分离使其完全裂开。<br />
-                3.
-                用7号丝线深缝前列腺—侧叶并向上牵拉，沿尿道周围剪除前列腺腺体。同法处理对侧。将前列腺包膜切缘的出血点与其周围组织纵缝，不缝合。
-              </div>
-            </div>
+            
           </el-card>
         </div>
       </el-aside>
@@ -327,7 +407,7 @@ const getActiveVideoCourse = async (courseId) => {
 .info-header {
   display: flex;
   align-items: flex-start;
-  color: rgb(7, 240, 228);
+  color: rgb(0, 0, 0);
   font-weight: bold;
   font-size: large;
   margin: 4px 0;
@@ -355,8 +435,13 @@ const getActiveVideoCourse = async (courseId) => {
   align-items: flex-start;
 }
 
-.main-container {
+/* .main-container {
   margin-top: 30px;
+} */
+.step-and-button {
+  display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .switch-button {
@@ -365,8 +450,11 @@ const getActiveVideoCourse = async (courseId) => {
   display: flex;
 }
 
-.video-sidebar {
+/* .video-sidebar {
   margin-top: 50px;
+} */
+.left-sidebar-bot {
+  margin-top: 10px;
 }
 
 .return-button {
@@ -385,5 +473,20 @@ const getActiveVideoCourse = async (courseId) => {
 
 :deep(.el-divider--horizontal) {
   margin: 8px 0;
+}
+
+
+:deep(.vue-flow__node) {
+  font-size: large;
+  width: 100px;
+  font-weight: 500;
+  border-width: 2px;
+  border-color: rgb(59, 59, 59);
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.video-main {
+  padding-top: 0;
 }
 </style>

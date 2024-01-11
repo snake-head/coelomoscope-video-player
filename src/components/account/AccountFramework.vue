@@ -29,7 +29,7 @@
               <el-icon>
                 <Document />
               </el-icon>
-              <span>我的课程</span>
+              <span>我的案例</span>
             </el-menu-item>
             <el-menu-item index="/course/like">
               <el-icon>

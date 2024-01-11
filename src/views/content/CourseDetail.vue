@@ -17,7 +17,7 @@
         </div>
         <div class="course-tab">
           <el-tabs v-model="courseTabActiveName" @tab-change="changeBreadcrumbItem" stretch>
-            <el-tab-pane label="课程" name="课程详情">
+            <el-tab-pane label="案例" name="案例详情">
               <div class="course-detail">
                 <el-card shadow="hover" style="margin :8px auto;">
                   <div class="video-search-bar">
@@ -41,7 +41,7 @@
                         </el-select>
                       </el-col>
                       <el-col :span="3">
-                        <el-button type="primary">筛选课程</el-button>
+                        <el-button type="primary">筛选案例</el-button>
                       </el-col>
                     </el-row>
                   </div>
@@ -100,8 +100,8 @@ const courseType = reactive({
   label: ''
 })
 const courseId = route.params.courseId;
-const courseTabActiveName = ref('课程详情')
-const currentBreadcrumbName = ref('课程详情')
+const courseTabActiveName = ref('案例详情')
+const currentBreadcrumbName = ref('案例详情')
 const operationDate = ref('')
 const operator = ref('')
 const patientAge = ref('')

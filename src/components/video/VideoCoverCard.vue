@@ -1,7 +1,7 @@
 <template>
   <div class="video-card__wrap">
-    <div class="video-image">
-      <el-link type="default" :href="`/video/${video.videoId}/play`" :underline="false" target="_blank">
+    <div class="video-image" :style="{ backgroundImage: `url(${video.coverImgUrl})` , backgroundSize: 'cover' }">
+      <el-link type="default" :href="`/video/${video.videoId}/play`" :underline="false">
         <video :src="video.videoUrl" style="width: 100%;border-radius: 6px;"></video>
       </el-link>
     </div>

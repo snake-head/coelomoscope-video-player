@@ -2,16 +2,16 @@
   <div>
     <el-row>
       <el-col>
-        <div class="top-menu" style="margin-top: 20px;">
+        <div class="top-menu">
           <el-menu :default-active="route.fullPath" mode="horizontal" background-color="#568ad6" text-color="#fff"
             active-text-color="#ffd04b" :ellipsis="false" :router="true">
             <el-menu-item index="/home">首页</el-menu-item>
             <el-sub-menu index="/search">
-              <template #title>课程资源</template>
+              <template #title>案例资源</template>
               <el-menu-item index="/search" v-for="(vType) in additionalTypeList" :key="vType.id"
                 @click="typeChange(vType)">{{ vType.label }}</el-menu-item>
             </el-sub-menu>
-            <el-menu-item index="/course/dept">科系课程</el-menu-item>
+            <el-menu-item index="/course/dept">科系案例</el-menu-item>
             <el-menu-item index="/knowledge">知识库</el-menu-item>
             <el-menu-item index="/data/statistic">数据分析</el-menu-item>
             <el-menu-item index="/questionnaire">问卷填写</el-menu-item>
@@ -102,7 +102,7 @@ onMounted(() => {
     .catch(err => console.log(err))
 })
 
-const additionalTypeList = [{ id: 0, name: "", label: "全部课程" }];
+const additionalTypeList = [{ id: 0, name: "", label: "全部案例" }];
 const router = useRouter();
 const route = useRoute();
 const typeChange = (type) => {

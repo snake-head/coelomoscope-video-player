@@ -1,3 +1,11 @@
+/*
+ * @Description: 
+ * @Version: 1.0
+ * @Autor: ZhuYichen
+ * @Date: 2023-05-23 15:25:36
+ * @LastEditors: ZhuYichen
+ * @LastEditTime: 2023-09-06 17:05:46
+ */
 import {
   createRouter,
   createWebHistory
@@ -55,6 +63,22 @@ const routes = [{
     path: 'video',
     name: 'VideoManagement',
     component: () => import('../views/VideoManagement.vue')
+  }]
+}, {
+  path: '/knowledge',
+  redirect: {
+    name: 'Category',
+  },
+  component: () => import('../views/KnowledgeHome.vue'),
+  children: [{
+    path: 'category',
+    name: 'Category',
+    component: () => import('../views/content/KnowledgeCategory.vue')
+  },
+  {
+    path: ':pageName(.*)/content',
+    name: 'KnowledgeContent',
+    component: () => import('../views/content/KnowledgeContent.vue')
   }]
 }]
 

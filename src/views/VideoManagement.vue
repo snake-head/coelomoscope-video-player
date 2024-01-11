@@ -1,3 +1,19 @@
+<!--
+ * @Description: 
+ * @Version: 1.0
+ * @Autor: ZhuYichen
+ * @Date: 2023-05-23 15:25:36
+ * @LastEditors: ZhuYichen
+ * @LastEditTime: 2023-08-31 22:44:43
+-->
+<!--
+ * @Description: 
+ * @Version: 1.0
+ * @Autor: ZhuYichen
+ * @Date: 2023-05-23 15:25:36
+ * @LastEditors: ZhuYichen
+ * @LastEditTime: 2023-07-27 13:18:24
+-->
 <template>
   <div>
     <FileUploader
@@ -23,9 +39,9 @@
           {{ scope.row.name }}
         </template>
       </el-table-column>
-      <el-table-column label="所属课程" align="center">
+      <el-table-column label="所属案例" align="center">
         <template #default="scope">
-          <el-select v-model="scope.row.courseId" placeholder="选择课程">
+          <el-select v-model="scope.row.courseId" placeholder="选择案例">
             <el-option
               v-for="item in courseOptions"
               :key="item.value"
@@ -136,7 +152,7 @@ const handleDelete = (row, column, index) => {
 const beforeUploadCheck = () => {
   for (let { courseId } of uploadFileContext.value) {
     if (!courseId) {
-      ElMessage.info("请选择视频对应的课程");
+      ElMessage.info("请选择视频对应的案例");
       return false;
     }
   }
