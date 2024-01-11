@@ -4,9 +4,11 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
+    "dev": "vite --mode development",
+    "build": "vite build --mode production",
+    "preview": "vite preview",
+    "start": "vite --mode production",
+    "build:env": "vite build --mode development"
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.0.10",
@@ -17,6 +19,8 @@
     "@vue-flow/minimap": "^1.1.1",
     "axios": "^1.2.0",
     "dashjs": "^4.6.0",
+    "dotenv": "^16.3.1",
+    "dotenv-webpack": "^8.0.1",
     "drawflow": "^0.0.59",
     "element-plus": "^2.2.26",
     "jquery": "^3.6.1",
@@ -31,5 +35,9 @@
     "eslint": "^8.35.0",
     "eslint-plugin-vue": "^9.9.0",
     "vite": "^3.2.5"
-  }
+  },
+  "main": "index.js",
+  "repository": "https://github.com/snake-head/coelomoscope-video-player.git",
+  "author": "zhuyichen <903730105@qq.com>",
+  "license": "MIT"
 }

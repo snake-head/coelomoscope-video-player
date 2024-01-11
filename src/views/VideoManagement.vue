@@ -4,7 +4,7 @@
  * @Autor: ZhuYichen
  * @Date: 2023-05-23 15:25:36
  * @LastEditors: ZhuYichen
- * @LastEditTime: 2023-08-31 22:44:43
+ * @LastEditTime: 2024-01-11 15:28:54
 -->
 <!--
  * @Description: 
@@ -17,9 +17,9 @@
 <template>
   <div>
     <FileUploader
-      action="http://localhost:3000/api/v1/data/video/uploadChunk/"
-      merge-url="http://localhost:3000/api/v1/data/video/mergeChunk/"
-      verify-url="http://localhost:3000/api/v1/data/video/verifyUpload/"
+      :action="`${baseURL}/data/video/uploadChunk/`"
+      :merge-url="`${baseURL}/data/video/mergeChunk/`"
+      :verify-url="`${baseURL}/data/video/verifyUpload/`"
       accept="video/*"
       :show-file-list="false"
       v-model:file-list="uploadFileList"
@@ -93,6 +93,7 @@ import { getCourse } from "../utils/request/course";
 import { ElMessage } from "element-plus";
 import axios from "../utils/request/axios";
 
+const baseURL = import.meta.env.VITE_BASE_URL
 const Status = {
   pending: "pending",
   uploading: "uploading",
