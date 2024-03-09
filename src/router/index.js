@@ -4,11 +4,11 @@
  * @Autor: ZhuYichen
  * @Date: 2023-05-23 15:25:36
  * @LastEditors: ZhuYichen
- * @LastEditTime: 2023-09-06 17:05:46
+ * @LastEditTime: 2024-01-11 22:08:28
  */
 import {
   createRouter,
-  createWebHistory
+  createWebHistory, createWebHashHistory
 } from 'vue-router'
 
 // TopMenu组件的跳转依赖这里的path，如果修改需要同步
@@ -83,7 +83,7 @@ const routes = [{
 }]
 
 const router = createRouter({
-  history: createWebHistory('/intelligentSurgery'),
+  history: createWebHistory('/'),
   routes
 })
 

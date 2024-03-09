@@ -39,6 +39,9 @@ const props = defineProps({
   verifyUrl: {
     type: String,
   },
+  courseId: {
+    type: String,
+  },
   beforeUploadCheck: {
     type: Function,
     default: () => true,
@@ -88,11 +91,11 @@ const uploadFile = async (options) => {
     }
   );
   props.onUploading(file.uid, container, uploadPercentage);
-
   const resp = await handleUpload(
     props.action,
     props.mergeUrl,
-    props.verifyUrl
+    props.verifyUrl,
+    props.courseId
   );
   props.afterChunkUpload(file, resp);
 };

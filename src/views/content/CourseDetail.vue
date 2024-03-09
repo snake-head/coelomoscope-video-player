@@ -130,9 +130,8 @@ const getCurrentCourseInfo = async (courseId) => {
     courseVO.courseDescription = course.courseDescription;
     courseVO.courseCoverUrl = course.courseCoverUrl;
     courseVO.deptCode = course.deptCode;
-    courseVO.courseTypeId = course.courseTypeId;
-
-    const courseTypeResponse = (await getCourseTypeById(course.courseTypeId)).data;
+    courseVO.courseTypeId = course.courseType;
+    const courseTypeResponse = (await getCourseTypeById(course.courseType)).data;
     courseType.id = courseTypeResponse?.id;
     courseType.name = courseTypeResponse?.name;
     courseType.label = courseTypeResponse?.label;
@@ -143,6 +142,7 @@ const getCurrentCourseInfo = async (courseId) => {
 const getVideos = async (courseId) => {
   try {
     videos.value = (await getVideosByCourseId({ courseId })).data.results;
+    console.log(videos.value)
   } catch (err) {
     console.log(err);
   }

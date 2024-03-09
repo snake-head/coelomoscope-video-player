@@ -4,7 +4,7 @@ import VideoPlayer from "../../components/video/VideoPlayer.vue";
 
 import { onMounted, reactive, ref, watch, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { getCourseByCourseId } from "../../utils/request/course";
+import { getCourseByCourseId, getCourseTypeById } from "../../utils/request/course";
 import {
   getVideoByVideoId,
   getVideosByCourseId,
@@ -16,6 +16,7 @@ import { Background } from '@vue-flow/background'
 import '@vue-flow/core/dist/style.css';
 import { MarkerType } from '@vue-flow/core'
 import { useStore } from 'vuex';
+import { getExpandedPlacements } from "@floating-ui/utils";
 const store = useStore();
 const route = useRoute();
 const router = useRouter();
@@ -53,16 +54,40 @@ const videoPlaybackTimes = computed(()=>store.state.videoPlaybackTimes)
 
 watch(() => videoPlaybackTimes, () => {
   const currentTime = videoPlaybackTimes.value[activeVideo.videoId]
-  const timeList = []
-  timeList.push(0)
-  activeVideo.metadata.phase.forEach(({time})=>{
-    timeList.push(time)
-  })
-  timeList.forEach((time, index)=>{
-    if (currentTime>time){
-      playbackProgress.value = index
-    }
-  })
+  if (activeVideo.metadata.phase) {
+    timeList.value.forEach((time, index)=>{
+      if (currentTime>time){
+        playbackProgress.value = index
+      }
+    })
+    elements.value.forEach((element)=>{
+      const id = parseInt(element.id)
+      if (!isNaN(id)){
+        if (id-1<playbackProgress.value){
+          element.style = {backgroundColor: "#caffc9"}
+        }else if(id-1==playbackProgress.value){
+          element.style = {backgroundColor: "#a9d4ff"}
+        }else{
+          element.style = {backgroundColor: "#ffffff"}
+        }
+      }else{
+        var regex = /e(-?\d+)/g;
+        const sourceId = parseInt(element.id.match(regex)[0].substring(1));
+        if(sourceId-1<playbackProgress.value){
+          element.style = {  'stroke-width': '2px'}
+          element.markerEnd = MarkerType.ArrowClosed
+          element.animated = false
+        }else if(sourceId-1==playbackProgress.value){
+          element.style = { stroke: '#409eff', 'stroke-width': '3px'}
+          element.animated = true
+        }else{
+          element.style = {  'stroke-width': '2px'}
+          element.markerEnd = MarkerType.ArrowClosed
+          element.animated = false
+        }
+      }
+    })
+  }
 },{ deep: true });
 
 onMounted(async () => {
@@ -88,22 +113,75 @@ watch(
   }
 );
 
+const elements = ref([])
+const timeList = ref([])
+
 const getActiveVideo = async () => {
   try {
     const video = (await getVideoByVideoId(videoId)).data.results[0];
     for (const key in video) {
       if (Object.hasOwnProperty.call(video, key)) {
         if (activeVideo.hasOwnProperty(key)) {
+          if(key=='metadata'&&video[key].phase){
+            getElements(video[key].phase)
+            getTimeList(video[key].phase)
+          }
           activeVideo[key] = video[key];
         }
       }
     }
-    console.log(activeVideo)
   } catch (err) {
     console.error(err);
   }
 };
 
+const getTimeList = (phase)=>{
+  phase.forEach(({time})=>{
+    timeList.value.push(time)
+  })
+}
+
+const getElements = (phase)=>{
+  const numPhases = phase.length;
+
+  for (let i = 0; i < numPhases; i++) {
+    const phaseItem = phase[i];
+    const id = i+1
+
+    const element = {
+      id: id,
+      label: phaseItem.text,
+      position: { x: 10 + i * 150, y: 10 },
+      class: 'light',
+      height: '68px',
+
+    };
+    
+    if (i===0){
+      element.type = 'input'
+      element.sourcePosition = Position.Right
+    }else if(i===numPhases-1){
+      element.type = 'output'
+      element.targetPosition = Position.Left
+    }else{
+      element.sourcePosition = Position.Right
+      element.targetPosition = Position.Left
+    }
+
+    elements.value.push(element);
+  }
+  for (let i = 1; i < numPhases; i++){
+    const element = {
+      id: `e${i}-${i+1}`,
+      source: i.toString(),
+      target: (i+1).toString(),
+      style: {  'stroke-width': '2px'},
+      markerEnd: MarkerType.ArrowClosed,
+    };
+    elements.value.push(element)
+  }
+  return elements;
+}
 const setQualityForVideo = () => {
   activeVideoQualityList.value = activeVideo.resolutionVersion?.map(
     (resolution) => {
@@ -135,8 +213,9 @@ const getActiveVideoCourse = async (courseId) => {
     activeVideoCourse.courseId = course.courseId;
     activeVideoCourse.courseName = course.courseName;
     activeVideoCourse.courseDescription = course.courseDescription;
-    activeVideoCourse.courseTypeName = course.courseType?.name;
-    activeVideoCourse.courseTypeLabel = course.courseType?.label;
+    const courseTypeContent = (await getCourseTypeById(course.courseType)).data;
+    activeVideoCourse.courseTypeName = courseTypeContent.name;
+    activeVideoCourse.courseTypeLabel = courseTypeContent.label;
   } catch (err) {
     console.error(err);
   }
@@ -169,21 +248,22 @@ panOnScroll.value = false;
 panOnDrag.value = false;
 // elementsSelectable.value = false;
 
-const elements = ref([
-  { id: '1', type: 'input', label: '开始', position: { x: 50, y: 10 }, sourcePosition: Position.Right, class: 'light', style: {backgroundColor: "#caffc9"} },
-  { id: '2', label: '阶段一', position: { x: 250, y: 10 }, sourcePosition: Position.Right, targetPosition: Position.Left, class: 'light', style: {backgroundColor: "#caffc9"} },
-  { id: '3', label: '阶段二', position: { x: 450, y: 10 }, sourcePosition: Position.Right, targetPosition: Position.Left, class: 'light', style: {backgroundColor: "#a9d4ff"} },
-  { id: '4', label: '阶段三', position: { x: 650, y: 10 }, sourcePosition: Position.Right, targetPosition: Position.Left, class: 'light',  },
-  { id: '5', label: '返回', position: { x: 550, y: 110 }, sourcePosition: Position.Left, targetPosition: Position.Right, class: 'light' },
-  { id: '6', type: 'output', label: '结束', position: { x: 850, y: 10 }, targetPosition: Position.Left, class: 'light' },
-  { id: 'e1-2', source: '1', target: '2', style: {  'stroke-width': '2px'}, markerEnd: MarkerType.ArrowClosed},
-  { id: 'e2-3', source: '2', target: '3', style: { 'stroke-width': '2px'}, markerEnd: MarkerType.ArrowClosed},
-  { id: 'e3-4', source: '3', target: '4', animated: true, style: { stroke: '#409eff', 'stroke-width': '3px'}},
-  { id: 'e4-6', source: '4', target: '6', style: { 'stroke-width': '2px'}, markerEnd: MarkerType.ArrowClosed},
+// const elements = ref([
+//   { id: '1', type: 'input', label: '开始', position: { x: 50, y: 10 }, sourcePosition: Position.Right, class: 'light', style: {backgroundColor: "#caffc9"} },
+//   { id: '2', label: '阶段一', position: { x: 250, y: 10 }, sourcePosition: Position.Right, targetPosition: Position.Left, class: 'light', style: {backgroundColor: "#caffc9"} },
+//   { id: '3', label: '阶段二', position: { x: 450, y: 10 }, sourcePosition: Position.Right, targetPosition: Position.Left, class: 'light', style: {backgroundColor: "#a9d4ff"} },
+//   { id: '4', label: '阶段三', position: { x: 650, y: 10 }, sourcePosition: Position.Right, targetPosition: Position.Left, class: 'light',  },
+//   { id: '5', label: '返回', position: { x: 550, y: 110 }, sourcePosition: Position.Left, targetPosition: Position.Right, class: 'light' },
+//   { id: '6', type: 'output', label: '结束', position: { x: 850, y: 10 }, targetPosition: Position.Left, class: 'light' },
+//   { id: 'e1-2', source: '1', target: '2', style: {  'stroke-width': '2px'}, markerEnd: MarkerType.ArrowClosed},
+//   { id: 'e2-3', source: '2', target: '3', style: { 'stroke-width': '2px'}, markerEnd: MarkerType.ArrowClosed},
+//   { id: 'e3-4', source: '3', target: '4', animated: true, style: { stroke: '#409eff', 'stroke-width': '3px'}},
+//   { id: 'e4-6', source: '4', target: '6', style: { 'stroke-width': '2px'}, markerEnd: MarkerType.ArrowClosed},
 
-  { id: 'e4-5', source: '4', target: '5', type: 'smoothstep', style: { 'stroke-width': '2px'}, markerEnd: MarkerType.ArrowClosed},
-  { id: 'e5-3', source: '5', target: '3', type: 'smoothstep', style: { 'stroke-width': '2px'}, markerEnd: MarkerType.ArrowClosed},
-])
+//   { id: 'e4-5', source: '4', target: '5', type: 'smoothstep', style: { 'stroke-width': '2px'}, markerEnd: MarkerType.ArrowClosed},
+//   { id: 'e5-3', source: '5', target: '3', type: 'smoothstep', style: { 'stroke-width': '2px'}, markerEnd: MarkerType.ArrowClosed},
+// ])
+
 </script>
 
 <template>
@@ -484,6 +564,8 @@ const elements = ref([
   border-color: rgb(59, 59, 59);
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
   font-family: Arial, Helvetica, sans-serif;
+  display: flex;
+  align-items: center;
 }
 
 .video-main {

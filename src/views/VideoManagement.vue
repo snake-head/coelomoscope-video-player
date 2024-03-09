@@ -4,7 +4,7 @@
  * @Autor: ZhuYichen
  * @Date: 2023-05-23 15:25:36
  * @LastEditors: ZhuYichen
- * @LastEditTime: 2024-01-11 15:28:54
+ * @LastEditTime: 2024-01-17 20:54:25
 -->
 <!--
  * @Description: 
@@ -20,6 +20,7 @@
       :action="`${baseURL}/data/video/uploadChunk/`"
       :merge-url="`${baseURL}/data/video/mergeChunk/`"
       :verify-url="`${baseURL}/data/video/verifyUpload/`"
+      :course-id="selectedCourseId"
       accept="video/*"
       :show-file-list="false"
       v-model:file-list="uploadFileList"
@@ -110,6 +111,14 @@ const uploadDisabled = computed(() =>
     false
   )
 );
+
+const selectedCourseId = computed(() => {
+  if (uploadFileContext.value[0]) {
+    return uploadFileContext.value[0].courseId;
+  } else {
+    return '';
+  }
+});
 watch(
   () => uploadFileList.value.length,
   () => {
@@ -133,6 +142,7 @@ watch(
         status,
       };
     });
+    console.log(uploadFileContext.value)
   }
 );
 
@@ -181,6 +191,7 @@ const uploadPercentageListener = (uid, container, uploadPercentage) => {
 };
 
 const updateCourseInfo = (file, resp) => {
+  console.log(uploadFileContext.value)
   axios({
     method: "patch",
     url: `/data/video/${resp.data.id}`,

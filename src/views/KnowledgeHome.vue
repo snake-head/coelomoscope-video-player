@@ -4,7 +4,7 @@
  * @Autor: ZhuYichen
  * @Date: 2023-05-23 15:25:36
  * @LastEditors: ZhuYichen
- * @LastEditTime: 2023-09-08 12:14:02
+ * @LastEditTime: 2024-01-12 15:58:35
 -->
 <template>
   <div>
@@ -17,6 +17,9 @@
       <el-main class="custom-main">
         <RouterView></RouterView>
       </el-main>
+      <el-footer class="custom-footer">
+        <FooterBar />
+      </el-footer>
     </el-container>
   </div>
 </template>
@@ -24,6 +27,7 @@
 import { useRoute } from "vue-router";
 import { ref, onMounted, watch } from "vue";
 import KnowledgeFunctionBar from '../components/global/KnowledgeFunctionBar.vue';
+import FooterBar from "../components/global/FooterBar.vue";
 import TopMenu from '../components/global/TopMenu.vue';
 const route = useRoute();
 const isFunctionBarShow = ref(true);
@@ -39,6 +43,7 @@ watch(() => route.name, (newVal, oldVal) => {
   padding: 0;
 }
 .custom-header {
+  background-color: white !important;
   padding: 0;
   position: absolute;
   width: 100%;
@@ -48,9 +53,17 @@ watch(() => route.name, (newVal, oldVal) => {
 
 .header-placeholder {
   height: 106px; /* 根据您的实际情况设置与 el-header 相同的高度 */
+  background-color: #f8f9fa;
 }
 
 .custom-main {
   padding: 0;
+  min-height: 710px;
+  overflow: hidden;
 }
+.custom-footer {
+    text-align: center;
+    background-color: #ccc; /* 这里可以替换为你想要的灰色背景色值 */
+    /* padding: 0; */
+  }
 </style>

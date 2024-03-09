@@ -109,6 +109,7 @@ export default {
           }
         }, 50);
       })
+      console.log(this.dashPlayer.getBitrateInfoListFor("video"))
       const targetBitrateList = this.dashPlayer.getBitrateInfoListFor("video").filter(e => e.height === height && e.width === width)
       if (!(targetBitrateList?.length > 0)) {
         this.dplayer.notice("切换清晰度失败");

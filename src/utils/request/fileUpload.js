@@ -93,7 +93,7 @@ export function useFileUpload() {
     });
   }
 
-  async function handleUpload(uploadUrl, mergeUrl, verifyUrl) {
+  async function handleUpload(uploadUrl, mergeUrl, verifyUrl, courseId) {
     if (!container.file) return;
     status.value = Status.uploading;
     const fileChunkList = createFileChunk(container.file);
@@ -119,11 +119,11 @@ export function useFileUpload() {
       percentage: uploadedList.includes(index) ? 100 : 0,
     }));
 
-    return await uploadChunks(uploadedList, uploadUrl, mergeUrl);
+    return await uploadChunks(uploadedList, uploadUrl, mergeUrl, courseId);
   }
   // 上传切片，同时过滤已上传的切片
   // upload chunks and filter uploaded chunks
-  async function uploadChunks(uploadedList = [], uploadUrl, mergeUrl) {
+  async function uploadChunks(uploadedList = [], uploadUrl, mergeUrl, courseId) {
     const newRequestList = data.value
       .filter(({ hash }) => !uploadedList.includes(hash))
       .map(({ chunk, hash, index }) => {
@@ -152,12 +152,12 @@ export function useFileUpload() {
     // the number of chunks uploaded this time
     // are equal to the number of all chunks
     if (uploadedList.length + newRequestList.length === data.value.length) {
-      return await mergeRequest(mergeUrl);
+      return await mergeRequest(mergeUrl, courseId);
     }
   }
   // 通知服务端合并切片
   // notify server to merge chunks
-  async function mergeRequest(mergeUrl) {
+  async function mergeRequest(mergeUrl, courseId) {
     if (!mergeUrl) {
       ElMessage.error("merge request url is required");
       return;
@@ -172,6 +172,7 @@ export function useFileUpload() {
         fileHash: container.hash,
         fileName: container.file.name,
         fileExt: container.ext,
+        courseId: courseId,
       }),
     });
     ElMessage.success("upload success");

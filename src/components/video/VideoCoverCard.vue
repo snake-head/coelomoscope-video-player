@@ -1,7 +1,11 @@
 <template>
   <div class="video-card__wrap">
     <div class="video-image" :style="{ backgroundImage: `url(${video.coverImgUrl})` , backgroundSize: 'cover' }">
-      <el-link type="default" :href="`/video/${video.videoId}/play`" :underline="false">
+      <el-link 
+        type="default" 
+        :href="`/video/${video.videoId}/play`" 
+        :underline="false"
+        :disabled="video.status === 2">
         <video :src="video.videoUrl" style="width: 100%;border-radius: 6px;"></video>
       </el-link>
     </div>
@@ -30,11 +34,12 @@ const videoType = ref("未指定");
 onMounted(async () => {
   try {
     const course = (await getCourseByCourseId(props.video.courseId)).data.results[0];
-    videoType.value = (await getCourseTypeById(course.courseTypeId)).data.name;
+    videoType.value = props.video.status == 2? '视频处理中': (await getCourseTypeById(course.courseType)).data.name
   } catch (err) {
     ElMessage.error(err.toString())
   }
 })
+
 const videoDateFormat = (originDateString) => {
   // 从后端取出的日期形如2014-11-03T18:36:51.382Z
   // 需要格式化截取 T 之前的日期部分之后展示

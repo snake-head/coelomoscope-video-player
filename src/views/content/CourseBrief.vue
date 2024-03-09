@@ -107,10 +107,9 @@ onMounted(async () => {
     courseVO.courseDescription = course.courseDescription;
     courseVO.courseCoverUrl = course.courseCoverUrl;
     courseVO.deptCode = course.deptCode;
-    courseVO.courseTypeId = course.courseTypeId;
+    courseVO.courseTypeId = course.courseType;
     courseDeptName.value = (await getDeptByDeptCode(course.deptCode)).data.results[0].deptName;
-
-    const courseTypeResponse = (await getCourseTypeById(course.courseTypeId)).data;
+    const courseTypeResponse = (await getCourseTypeById(course.courseType)).data;
     courseType.id = courseTypeResponse?.id;
     courseType.name = courseTypeResponse?.name;
     courseType.label = courseTypeResponse?.label;

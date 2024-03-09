@@ -1,3 +1,11 @@
+/*
+ * @Description: 
+ * @Version: 1.0
+ * @Autor: ZhuYichen
+ * @Date: 2023-05-23 15:25:36
+ * @LastEditors: ZhuYichen
+ * @LastEditTime: 2024-01-19 09:44:50
+ */
 import axios from "./axios";
 
 export const getVideosByCourseId = async ({
@@ -5,6 +13,7 @@ export const getVideosByCourseId = async ({
   page = 1,
   limit = 10
 } = {}) => {
+  console.log(courseId)
   return axios.get('/data/video', {
       params: {
         courseId: courseId,
@@ -17,6 +26,7 @@ export const getVideosByCourseId = async ({
 }
 
 export const getVideoByVideoId = async (videoId) => {
+  console.log(videoId)
   return axios.get('/data/video', {
       params: {
         videoId: videoId
