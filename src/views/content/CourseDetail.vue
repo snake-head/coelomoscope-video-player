@@ -62,6 +62,16 @@
             <el-tab-pane label="讨论" name="讨论">讨论</el-tab-pane>
           </el-tabs>
         </div>
+        <div class="pagination-container">
+          <el-pagination
+            layout="total, prev, pager, next, jumper"
+            :total="totalVideos"
+            :current-page.sync="currentPage"
+            :page-size.sync="pageSize"
+            @current-change="handlePageChange"
+            @size-change="handleSizeChange">
+          </el-pagination>
+        </div>
       </el-main>
     </el-container>
   </div>
@@ -69,6 +79,7 @@
 <script setup>
 import VideoParagraphLine from '../../components/video/VideoParagraphLine.vue';
 import { ArrowRight } from '@element-plus/icons-vue'
+import { ElPagination } from 'element-plus';
 
 import { ref, reactive, onMounted, computed } from 'vue';
 import {
@@ -78,6 +89,11 @@ import {
 import { courseQueryCriteria } from "../../utils/global-search/course";
 import { getCourseByCourseId, getCourseTypeById } from "../../utils/request/course";
 import { getVideosByCourseId } from "../../utils/request/video";
+
+// 分页状态
+const currentPage = ref(1);
+const pageSize = ref(10);
+const totalVideos = ref(0);
 
 onMounted(() => {
   getCurrentCourseInfo(courseId);
@@ -141,11 +157,26 @@ const getCurrentCourseInfo = async (courseId) => {
 }
 const getVideos = async (courseId) => {
   try {
-    videos.value = (await getVideosByCourseId({ courseId })).data.results;
+    const response = await getVideosByCourseId(
+      { courseId, page: currentPage.value, limit: pageSize.value }
+      )
+    videos.value = response.data.results;
+    totalVideos.value = response.data.totalCount;  // 假设后端返回总视频数
+    console.log(totalVideos.value)
     console.log(videos.value)
   } catch (err) {
     console.log(err);
   }
+}
+
+const handlePageChange = (newPage) => {
+  currentPage.value = newPage;
+  getVideos(courseId);
+}
+
+const handleSizeChange = (newSize) => {
+  pageSize.value = newSize;
+  getVideos(courseId);
 }
 
 const changeBreadcrumbItem = (tabPaneName) => {
@@ -172,5 +203,11 @@ const setQueryCourseId = (courseTypeId) => {
 
 :deep(.el-divider--horizontal) {
   margin: 8px 0;
+}
+
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  padding: 16px 0;  /* 添加适当的上下间距 */
 }
 </style>

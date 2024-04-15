@@ -124,37 +124,37 @@ export function useFileUpload() {
   // 上传切片，同时过滤已上传的切片
   // upload chunks and filter uploaded chunks
   async function uploadChunks(uploadedList = [], uploadUrl, mergeUrl, courseId) {
-    const newRequestList = data.value
-      .filter(({ hash }) => !uploadedList.includes(hash))
-      .map(({ chunk, hash, index }) => {
-        const formData = new FormData();
-        formData.append("chunk", chunk);
-        formData.append("chunkName", hash);
-        formData.append("filename", container.file.name);
-        formData.append("fileExt", container.ext);
-        formData.append("fileHash", container.hash);
-        return {
-          formData,
-          index,
-        };
-      })
-      .map(({ formData, index }) =>
-        request({
-          url: uploadUrl,
-          data: formData,
-          onProgress: createProgressHandler(data.value[index]),
-          requestList: requestList.value,
-        })
-      );
-    await Promise.all(newRequestList);
-    // 之前上传的切片数量 + 本次上传的切片数量 = 所有切片数量时合并切片
-    // merge chunks when the number of chunks uploaded before and
-    // the number of chunks uploaded this time
-    // are equal to the number of all chunks
-    if (uploadedList.length + newRequestList.length === data.value.length) {
+    const chunkData = data.value.filter(({ hash }) => !uploadedList.includes(hash));
+  
+    const uploadChunk = async (chunk) => {
+      const formData = new FormData();
+      formData.append("chunk", chunk.chunk);
+      formData.append("chunkName", chunk.hash);
+      formData.append("filename", container.file.name);
+      formData.append("fileExt", container.ext);
+      formData.append("fileHash", container.hash);
+      return request({
+        url: uploadUrl,
+        data: formData,
+        onProgress: createProgressHandler(data.value[chunk.index]),
+        requestList: requestList.value,
+      });
+    };
+  
+    const uploadChunksInBatches = async (chunks, batchSize) => {
+      for (let i = 0; i < chunks.length; i += batchSize) {
+        const batch = chunks.slice(i, i + batchSize);
+        await Promise.all(batch.map(uploadChunk));
+      }
+    };
+  
+    await uploadChunksInBatches(chunkData, 10);
+  
+    if (uploadedList.length + chunkData.length === data.value.length) {
       return await mergeRequest(mergeUrl, courseId);
     }
   }
+  
   // 通知服务端合并切片
   // notify server to merge chunks
   async function mergeRequest(mergeUrl, courseId) {
