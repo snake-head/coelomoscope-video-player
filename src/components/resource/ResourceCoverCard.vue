@@ -1,19 +1,14 @@
 <template>
   <div class="video-card__wrap">
-    <div class="video-image" :style="{ backgroundImage: `url(${video.coverImgUrl})` , backgroundSize: 'cover' }">
-      <el-link 
-        type="default" 
-        :href="`/video/${video.videoId}/play`" 
-        :underline="false"
-        :disabled="video.status === 2">
-        <video :src="video.videoUrl" style="width: 100%;border-radius: 6px;"></video>
-      </el-link>
-    </div>
+    <a :href="`/resource/${resource.id}/content`" style="display: block; width: 100%; height: 100%; text-decoration: none;">
+      <div class="video-image" :style="{ backgroundImage: `url(${resource.coverImgUrl})`, backgroundSize: 'cover' }">
+      </div>
+    </a>
     <div class="video-mask">
       <div class="video-stats">
         <div class="video-stats--left">
-          <span class="video-stats--item">{{ videoType }}</span>
-          <span class="video-stats--item">{{ videoDateFormat(video.createdAt) }}</span>
+          <!-- <span class="video-stats--item">{{ videoType }}</span> -->
+          <span class="video-stats--item">{{ videoDateFormat(resource.createdAt) }}</span>
         </div>
       </div>
     </div>
@@ -24,7 +19,7 @@ import { ref, onMounted } from "vue";
 import { getCourseByCourseId, getCourseTypeById } from "../../utils/request/course";
 import { ElMessage } from "element-plus";
 const props = defineProps({
-  video: {
+  resource: {
     type: Object,
     required: true,
   }
@@ -33,8 +28,9 @@ const props = defineProps({
 const videoType = ref("未指定");
 onMounted(async () => {
   try {
-    const course = (await getCourseByCourseId(props.video.courseId)).data.results[0];
-    videoType.value = props.video.status == 2? '视频处理中': (await getCourseTypeById(course.courseType)).data.name
+    // const course = (await getCourseByCourseId(props.video.courseId)).data.results[0];
+    const course = 'test'
+    // videoType.value = props.video.status == 2? '视频处理中': (await getCourseTypeById(course.courseType)).data.name
   } catch (err) {
     ElMessage.error(err.toString())
   }
@@ -46,11 +42,15 @@ const videoDateFormat = (originDateString) => {
   return originDateString.substring(0, originDateString.indexOf("T"));
 }
 </script>
-<style lang="css" scope>
+<style lang="scss" scope>
 .video-card__wrap {
   position: relative;
   border-radius: 6px;
   z-index: 1;
+
+  .video-image {
+    height: 100px;
+  }
 }
 
 .video-stats--item {
@@ -58,18 +58,16 @@ const videoDateFormat = (originDateString) => {
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  /* margin-right: 12px; */
+  // margin-right: 12px;
 }
 
 .video-stats--left {
   min-width: 0;
   flex: 1;
+  display: -webkit-flex;
   display: flex;
-  align-items: flex-start;
-  justify-content: flex-start;
-  flex-direction: column;
-  margin-bottom: 5px;
-  margin-left: -5px;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .video-stats {

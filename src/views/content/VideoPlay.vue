@@ -16,7 +16,7 @@ import { Background } from '@vue-flow/background'
 import '@vue-flow/core/dist/style.css';
 import { MarkerType } from '@vue-flow/core'
 import { useStore } from 'vuex';
-import { getExpandedPlacements } from "@floating-ui/utils";
+import CryptoJS from 'crypto-js'
 const store = useStore();
 const route = useRoute();
 const router = useRouter();
@@ -40,7 +40,51 @@ const activeVideo = reactive({
   courseId: "",
   resolutionVersion: [],
   metadata: {},
+  triplet: "",
 });
+
+const activeName = ref('step')
+const handleClick = (tab, event) => {
+  console.log(tab, event)
+}
+function calculateMD5(text) {
+    const hash = CryptoJS.MD5(text);
+    return hash.toString(CryptoJS.enc.Hex);
+}
+function createURLWithMD5(text) {
+    // 计算MD5哈希值
+    const hash = calculateMD5(text);
+
+    // 构建包含哈希值的URL
+    const url = `https://omentor.vico-lab.com:3443/videos/audio/${hash}.wav`;
+
+    return url;
+}
+const captionTime = ref('未指定')
+const captionContent = ref('')
+const audioUrl = ref('')
+const generateCaption = ()=>{
+  activeName.value = 'caption'
+  captionTime.value = formattedTime.value
+  const captionList = activeVideo.metadata.caption
+  for (let i = 0; i < captionList.length; i++) {
+    const captionObj = captionList[i]
+    console.log(captionObj.time, videoPlaybackTimes.value[activeVideo.videoId])
+    if (captionObj.time > videoPlaybackTimes.value[activeVideo.videoId]){
+      if(i==0){
+        captionContent.value = '准备阶段'
+        audioUrl.value = createURLWithMD5('准备阶段')
+      }else{
+        captionContent.value = captionList[i-1].text
+        audioUrl.value = createURLWithMD5(captionList[i-1].text)
+      }
+      break;
+    }
+    captionContent.value = captionList[i].text
+    audioUrl.value = createURLWithMD5(captionList[i].text)
+}
+  // captionContent.value = '在手术影像中，医生正在使用位于画面左侧的双极钳来牵拉手术区域内的组织。这种工具对于提供手术所需的暴露和张力至关重要，以确保操作的精准性。画面右侧可以看到单极弯曲剪刀，表明切割或解剖可能是手术程序的一部分。手术焦点所在的肾脏部分遮盖，仅在图像顶部部分可见，显示手术区域集中在此。肾脏下方可见小肠，位于图像的下方，表明手术区域位于腹腔内。医生熟练操控这些工具对手术的成功完成至关重要。'
+}
 const enforceOptions = reactive({
   isAiIdentify: false,
   isAiDehazy: false,
@@ -51,6 +95,22 @@ const hasDataPrepared = ref(false);
 const playbackProgress = ref(0); // Default value, you can choose a suitable default index.
 
 const videoPlaybackTimes = computed(()=>store.state.videoPlaybackTimes)
+const formattedTime = computed(() => {
+  // 先取整秒数
+  const totalSeconds = Math.floor(videoPlaybackTimes.value[activeVideo.videoId]);
+
+  // 将秒数转换为 hh:mm:ss 格式
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+
+  // 转换为两位数格式
+  const paddedHours = hours.toString().padStart(2, '0');
+  const paddedMinutes = minutes.toString().padStart(2, '0');
+  const paddedSeconds = seconds.toString().padStart(2, '0');
+
+  return `${paddedHours}:${paddedMinutes}:${paddedSeconds}`;
+});
 
 watch(() => videoPlaybackTimes, () => {
   const currentTime = videoPlaybackTimes.value[activeVideo.videoId]
@@ -320,7 +380,7 @@ panOnDrag.value = false;
                       <VideoCoverCard :video="video" />
                     </div>
                     <div class="video-info">
-                      <span class="video-name">{{ video.videoName }}</span>
+                      <span class="video-info-name">{{ video.videoName }}</span>
                       <span class="operator-name">主刀医生：张三</span>
                       <span class="remarks">备注：XXX</span>
                     </div>
@@ -350,12 +410,14 @@ panOnDrag.value = false;
               :src="activeVideo.videoUrl"
               :phase="activeVideo.metadata.phase"
               :videoId="activeVideo.videoId"
+              :triplet="activeVideo.triplet"
               v-if="hasDataPrepared"
             ></VideoPlayer>
           </div>
           <div class="operation-steps">
               <div class="step-and-button">
-                <div class="info-header">手术步骤</div>
+                <!-- <div class="info-header">手术步骤</div> -->
+                <el-button type="primary" plain @click="generateCaption">生成描述</el-button>
                 <div class="switch-button">
                   <span class="switch-button__item">
                     <el-switch
@@ -373,17 +435,31 @@ panOnDrag.value = false;
                   </span>
                 </div>
               </div>
-              
-              <div class="operation-steps__content content-textaria">
-                <div style="height: 150px">
-                  <!-- <el-steps direction="vertical" :active=playbackProgress>
-                    <el-step v-for="({text}, index) in activeVideo.metadata.phase" :key="index" :title="text" />
-                  </el-steps> -->
-                  <VueFlow v-model="elements" :class="{ dark }" class="basicflow" :default-viewport="{ zoom: 0.8 }" :min-zoom="0.2" :max-zoom="4">
-                    <Background :pattern-color="dark ? '#FFFFFB' : '#aaa'" gap="8" />
-                  </VueFlow>
-                </div>
-              </div>
+              <el-tabs v-model="activeName" class="demo-tabs" @tab-click="handleClick">
+                <el-tab-pane label="手术步骤" name="step">
+                  <div class="operation-steps__content content-textaria">
+                    <div style="height: 150px">
+                      <!-- <el-steps direction="vertical" :active=playbackProgress>
+                        <el-step v-for="({text}, index) in activeVideo.metadata.phase" :key="index" :title="text" />
+                      </el-steps> -->
+                      <VueFlow v-model="elements" :class="{ dark }" class="basicflow" :default-viewport="{ zoom: 0.8 }" :min-zoom="0.2" :max-zoom="4">
+                        <Background :pattern-color="dark ? '#FFFFFB' : '#aaa'" gap="8" />
+                      </VueFlow>
+                    </div>
+                  </div>
+                </el-tab-pane>
+                <el-tab-pane label="视频描述" name="caption">
+                  <div class="video-caption-wrapper">
+                    <div class="video-time-audio">
+                      <div class="video-caption-time">时间：{{ captionTime }}</div>
+                      <audio :key="audioUrl" controls>
+                        <source :src="audioUrl">
+                      </audio>
+                    </div>
+                    <div class="video-caption-content">描述：{{ captionContent }}</div>
+                  </div>
+                </el-tab-pane>
+              </el-tabs>
             </div>
         </div>
       </el-main>
@@ -522,11 +598,11 @@ panOnDrag.value = false;
   display: flex;
     justify-content: space-between;
     align-items: center;
+    margin-bottom: 8px;
 }
 
 .switch-button {
   text-align: left;
-  margin-bottom: 8px;
   display: flex;
 }
 
@@ -570,5 +646,41 @@ panOnDrag.value = false;
 
 .video-main {
   padding-top: 0;
+}
+
+.video-name {
+  text-align: left;
+  font-weight: 600;
+}
+
+.video-info-name {
+  max-width: 130px;
+    display: inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.video-caption-wrapper{
+  justify-items: flex-start;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.video-time-audio{
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.video-caption-time{
+  font-weight: bold;
+  margin-right: 30px;
+}
+
+.video-caption-content{
+  text-align: left;
+  margin-top: 10px;
 }
 </style>

@@ -35,8 +35,20 @@ export default {
       type: String,
       required: true,
     },
+    triplet: {
+      type: String,
+      required: true,
+    },
   },
   data() {
+    const subtitle = this.triplet ? {
+      url: this.triplet,
+      type: 'webvtt',
+      fontSize: '25px',
+      bottom: '5%',
+      color: '#b7daff',
+    } : undefined;
+
     return {
       dplayer: null,
       dashPlayer: dashjs.MediaPlayer().create(),
@@ -49,10 +61,11 @@ export default {
               this.dashPlayer.initialize(video, video.src, false);
             },
           },
-          quality: this.quality.length > 0 ? this.quality?.map(item => Object.assign({ type: 'customDash' }, item)) : undefined,
+          quality: this.quality.length > 0 ? this.quality.map(item => Object.assign({ type: 'customDash' }, item)) : undefined,
           defaultQuality: this.defaultQuality
         },
         highlight: this.phase,
+        ...subtitle ? { subtitle } : {},  // 使用条件扩展来决定是否包含subtitle
       },
       isDehazed: false,
       baseQualityIndex: 0,
@@ -109,7 +122,6 @@ export default {
           }
         }, 50);
       })
-      console.log(this.dashPlayer.getBitrateInfoListFor("video"))
       const targetBitrateList = this.dashPlayer.getBitrateInfoListFor("video").filter(e => e.height === height && e.width === width)
       if (!(targetBitrateList?.length > 0)) {
         this.dplayer.notice("切换清晰度失败");
@@ -131,6 +143,7 @@ export default {
     }
   },
   mounted() {
+    console.log(this.options)
     this.customInitDplayer()
     this.$nextTick(() => {
       if (this.$refs.dplayer && this.$refs.dplayer.dp) {

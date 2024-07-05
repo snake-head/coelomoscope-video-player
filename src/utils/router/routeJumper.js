@@ -1,3 +1,11 @@
+/*
+ * @Description: 
+ * @Version: 1.0
+ * @Autor: ZhuYichen
+ * @Date: 2023-05-23 15:25:36
+ * @LastEditors: ZhuYichen
+ * @LastEditTime: 2024-05-13 16:01:11
+ */
 import {
   courseQueryCriteria,
 } from "../global-search/course";
@@ -30,4 +38,13 @@ export const toVideoManagement = (router) => {
   router.push({
     name: 'VideoManagement'
   });
+}
+
+export const toPPTDetail = (router, pptId) => {
+  router.push({
+    name: 'PPTDetail',
+    params: {
+      pptId
+    }
+  })
 }

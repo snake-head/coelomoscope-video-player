@@ -4,7 +4,7 @@
  * @Autor: ZhuYichen
  * @Date: 2023-05-23 15:25:36
  * @LastEditors: ZhuYichen
- * @LastEditTime: 2024-01-11 22:08:28
+ * @LastEditTime: 2024-05-13 17:28:22
  */
 import {
   createRouter,
@@ -80,7 +80,24 @@ const routes = [{
     name: 'KnowledgeContent',
     component: () => import('../views/content/KnowledgeContent.vue')
   }]
-}]
+},{
+  path: '/resource',
+  redirect: {
+    name: 'ResourceCategory',
+  },
+  component: () => import('../views/ResourceHome.vue'),
+  children: [{
+    path: 'category',
+    name: 'ResourceCategory',
+    component: () => import('../views/content/ResourceCategory.vue')
+  },
+  {
+    path: ':pageName(.*)/content',
+    name: 'ResourceContent',
+    component: () => import('../views/content/ResourceContent.vue')
+  }]
+}
+]
 
 const router = createRouter({
   history: createWebHistory('/'),
