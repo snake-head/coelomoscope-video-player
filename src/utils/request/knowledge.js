@@ -13,6 +13,7 @@ export const getPagesByPageName = async ({
   page = 1,
   limit = 10
 } = {}) => {
+  console.log(pageName)
   return axios.get('/data/knowledge', {
       params: {
         pageName: pageName,

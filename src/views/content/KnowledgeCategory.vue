@@ -4,7 +4,7 @@
  * @Autor: ZhuYichen
  * @Date: 2023-08-31 22:43:50
  * @LastEditors: ZhuYichen
- * @LastEditTime: 2023-09-08 13:01:35
+ * @LastEditTime: 2024-07-18 14:39:14
 -->
 <template>
   <div class="category-display-table">
@@ -22,10 +22,28 @@ const categories = ref([
   {
     categoryName: '泌尿外科',
     categoryId: 0,
+    subpages: [
+      '肾上腺',
+      '前列腺癌',
+      '前列腺',
+      '肾癌',
+      '膀胱',
+      '睾丸',
+    ]
   },
   {
     categoryName: '胃肠外科',
     categoryId: 1,
+    subpages: [
+      '胃癌',
+    ]
+  },
+  {
+    categoryName: '胸外科',
+    categoryId: 2,
+    subpages: [
+      '肺癌',
+    ]
   }
 ])
 </script>

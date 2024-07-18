@@ -4,7 +4,7 @@
  * @Autor: ZhuYichen
  * @Date: 2023-09-04 15:08:28
  * @LastEditors: ZhuYichen
- * @LastEditTime: 2023-09-08 13:22:22
+ * @LastEditTime: 2024-07-18 14:54:06
 -->
 <template>
     <div>
@@ -70,7 +70,7 @@ onMounted(async () => {
 
 const getCurPage = async () => {
   try {
-    const page = (await getPagesByPageName(pageName)).data.results[0];
+    const page = (await getPagesByPageName({pageName})).data.results[0];
     for (const key in page) {
       if (Object.hasOwnProperty.call(page, key)) {
         if (curPage.hasOwnProperty(key)) {

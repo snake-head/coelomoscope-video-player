@@ -4,7 +4,7 @@
  * @Autor: ZhuYichen
  * @Date: 2023-09-01 12:52:35
  * @LastEditors: ZhuYichen
- * @LastEditTime: 2023-09-04 14:52:40
+ * @LastEditTime: 2024-07-18 14:47:05
 -->
 <template>
   <div class="main-container">
@@ -26,22 +26,14 @@
 <script setup>
 import SubGroup from './SubGroup.vue';
 import { ref, reactive, onMounted, computed } from 'vue';
-defineProps({
+const props = defineProps({
   category: {
     type: Object,
     required: true,
   }
 })
-const subpages = ref([
-  '肾上腺',
-  '前列腺癌',
-  '前列腺',
-  '肾癌',
-  '膀胱',
-  '睾丸',
-])
 
-const subpageLinksLength = computed(() => subpages.value.length);
+const subpageLinksLength = computed(() => props.category.subpages.length);
 
 function filterByFirstChar(stringList){
   // 创建一个空对象，用于存储分组后的子列表
@@ -74,7 +66,7 @@ function filterByFirstChar(stringList){
   return groupedLists
 }
 
-const fiteredSubpages = computed(()=>filterByFirstChar(subpages.value))
+const fiteredSubpages = computed(()=>filterByFirstChar(props.category.subpages))
 
 // onMounted(()=>{
 //   filterByFirstChar(subpages.value)
