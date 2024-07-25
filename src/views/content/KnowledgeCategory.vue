@@ -4,7 +4,7 @@
  * @Autor: ZhuYichen
  * @Date: 2023-08-31 22:43:50
  * @LastEditors: ZhuYichen
- * @LastEditTime: 2024-07-18 14:39:14
+ * @LastEditTime: 2024-07-25 13:04:19
 -->
 <template>
   <div class="category-display-table">
@@ -36,6 +36,9 @@ const categories = ref([
     categoryId: 1,
     subpages: [
       '胃癌',
+      '残胃癌',  // 新增
+      '胃及十二指肠溃疡',  // 新增
+      '胃灼热'  // 新增
     ]
   },
   {
@@ -43,6 +46,9 @@ const categories = ref([
     categoryId: 2,
     subpages: [
       '肺癌',
+      '支气管镜检查',  // 新增
+      '胸痛',  // 新增
+      '胸部X光'  // 新增
     ]
   }
 ])

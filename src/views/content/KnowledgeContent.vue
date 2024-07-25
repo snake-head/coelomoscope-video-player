@@ -4,7 +4,7 @@
  * @Autor: ZhuYichen
  * @Date: 2023-09-04 15:08:28
  * @LastEditors: ZhuYichen
- * @LastEditTime: 2024-07-18 14:54:06
+ * @LastEditTime: 2024-07-25 11:16:12
 -->
 <template>
     <div>
@@ -160,6 +160,10 @@ function processContents(contentList){
         .nav-contents{
             position: fixed;
             width: 200px;
+            height: 80%;
+            overflow-y: scroll;
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none;  /* IE 10+ */
             .contents-title {
                 padding: 12px 0 7px 0;
                 margin-top: 17px;
