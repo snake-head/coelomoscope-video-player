@@ -1,6 +1,6 @@
 # 手术视频示教系统
 
-本仓库是系统的前端部分，后端部分在[这里](https://github.com/Sddft97/operation_platform_backend)。
+本仓库是系统的前端部分，后端部分在[这里](https://github.com/snake-head/operation_platform_backend)。
 
 ## 使用方式
 ### 搭建环境
