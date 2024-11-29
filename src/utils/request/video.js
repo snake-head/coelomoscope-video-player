@@ -15,12 +15,12 @@ export const getVideosByCourseId = async ({
 } = {}) => {
   console.log(courseId)
   return axios.get('/data/video', {
-      params: {
-        courseId: courseId,
-        _page: page,
-        _limit: limit
-      }
-    })
+    params: {
+      courseId: courseId,
+      _page: page,
+      _limit: limit
+    }
+  })
     .then(res => res.data)
     .catch(err => err);
 }
@@ -28,10 +28,21 @@ export const getVideosByCourseId = async ({
 export const getVideoByVideoId = async (videoId) => {
   console.log(videoId)
   return axios.get('/data/video', {
-      params: {
-        videoId: videoId
-      }
-    })
+    params: {
+      videoId: videoId
+    }
+  })
+    .then(res => res.data)
+    .catch(err => err);
+}
+
+export const getAllVideos = async (page = 6, limit = 48) => {
+  return axios.get('/data/video', {
+    params: {
+      _page: page,
+      _limit: limit
+    }
+  })
     .then(res => res.data)
     .catch(err => err);
 }

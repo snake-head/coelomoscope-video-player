@@ -28,6 +28,14 @@ const routes = [{
     name: 'CourseSearch',
     component: () => import('../views/content/CourseSearch.vue')
   }, {
+    path: '/totalvideo',
+    name: 'totalvideo',
+    component: () => import('../views/content/TotalVideo.vue'),
+  }, {
+    path: '/Statistic',
+    name: 'Statistic',
+    component: () => import('../views/Statistic.vue'),
+  }, {
     path: 'video/:videoId(vid_?[a-z0-9]+.*)/play',
     name: 'VideoPlay',
     component: () => import('../views/content/VideoPlay.vue')
@@ -53,7 +61,11 @@ const routes = [{
     path: 'userInfo',
     name: 'AccountUserInfo',
     component: () => import('../views/AccountUserInfo.vue')
-  }]
+  }, {
+    path: 'experience',
+    name: 'AccountExperience',
+    component: () => import('../views/AccountExperience.vue'),
+  },]
 }, {
   path: '/management',
   redirect: {
@@ -80,7 +92,7 @@ const routes = [{
     name: 'KnowledgeContent',
     component: () => import('../views/content/KnowledgeContent.vue')
   }]
-},{
+}, {
   path: '/resource',
   redirect: {
     name: 'ResourceCategory',

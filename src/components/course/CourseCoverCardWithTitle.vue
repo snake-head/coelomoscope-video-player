@@ -30,7 +30,7 @@ defineProps({
 .course-card {
   width: 250px;
   height: 200px;
-  margin: 8px;
+  margin: 15px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
