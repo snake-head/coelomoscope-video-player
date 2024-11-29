@@ -4,7 +4,7 @@
  * @Autor: ZhuYichen
  * @Date: 2023-05-23 15:25:36
  * @LastEditors: ZhuYichen
- * @LastEditTime: 2024-05-13 17:28:22
+ * @LastEditTime: 2024-11-29 16:11:34
  */
 import {
   createRouter,
@@ -95,6 +95,17 @@ const routes = [{
     path: ':pageName(.*)/content',
     name: 'ResourceContent',
     component: () => import('../views/content/ResourceContent.vue')
+  }]
+},{
+  path: '/aitools',
+  redirect: {
+    name: 'AitoolsPage',
+  },
+  component: () => import('../views/AitoolsHome.vue'),
+  children: [{
+    path: 'category',
+    name: 'AitoolsPage',
+    component: () => import('../views/content/AitoolsPage.vue')
   }]
 }
 ]
