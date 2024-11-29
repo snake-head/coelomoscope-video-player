@@ -17,6 +17,7 @@
             <el-menu-item index="/data/statistic">数据分析</el-menu-item>
             <el-menu-item index="/questionnaire">问卷填写</el-menu-item>
             <el-menu-item index="/feedback">建议反馈</el-menu-item>
+            <el-menu-item index="/aitools">AI助手</el-menu-item>
             <div style="flex-grow: 1;" />
             <el-menu-item index="/userInfo">
               <el-dropdown>
