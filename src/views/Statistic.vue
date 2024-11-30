@@ -79,6 +79,7 @@ const deviceData = ref([
 ]);
 
 onMounted(() => {
+  console.log('sss')
   // 初始化饼图
   const pieChartInstance = echarts.init(pieChart.value);
   pieChartInstance.setOption({
