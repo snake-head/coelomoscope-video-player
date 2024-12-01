@@ -21,6 +21,7 @@
       </div>
     </div>
     <div class="chat-input">
+      <button @click="clearHistory" class="clear-history-button">清空历史</button>
       <input
         type="text"
         v-model="newMessage"
@@ -35,8 +36,15 @@
 </template>
 
 <script>
-import { ref, nextTick } from 'vue';
+import { ref, onMounted, nextTick } from 'vue';
 import { Avatar, User, Promotion } from '@element-plus/icons-vue';
+import OpenAI from 'openai';
+
+const openai = new OpenAI({
+  baseURL: 'https://api.deepseek.com',
+  dangerouslyAllowBrowser: true,
+  apiKey: ''
+});
 
 export default {
   components: {
@@ -49,36 +57,59 @@ export default {
     const newMessage = ref('');
     const mode = ref('chat'); // 'chat' 或 'image'
     const messageContainer = ref(null);
+    
+    // 系统提示
+    const systemPrompt = "你是微创手术视频示教平台的ai助手，你需要回答用户所有关于医学或手术相关的问题，其他问题你可以拒绝回答。";
+
+    const loadHistory = () => {
+      const history = localStorage.getItem('chatHistory');
+      if (history) {
+        messages.value = JSON.parse(history);
+      }
+    };
+
+    const saveHistory = () => {
+      localStorage.setItem('chatHistory', JSON.stringify(messages.value));
+    };
 
     const switchMode = (newMode) => {
       mode.value = newMode;
       messages.value = []; // 切换模式时清空消息
+      saveHistory(); // 清空后保存
     };
 
-    const sendMessage = () => {
+    const sendMessage = async () => {
       if (newMessage.value.trim()) {
-        messages.value.push({
-          text: newMessage.value,
-          type: 'sent',
-        });
+        const userMessage = newMessage.value;
+        messages.value.push({ text: userMessage, type: 'sent' });
+        saveHistory();
 
         if (mode.value === 'chat') {
-          // AI助手模式
-          setTimeout(() => {
-            messages.value.push({
-              text: '这是一条AI助手的回复消息',
-              type: 'received',
+          try {
+            const completion = await openai.chat.completions.create({
+              messages: [
+                { role: 'system', content: systemPrompt }, // 添加系统提示
+                ...messages.value.map(msg => ({ role: msg.type === 'sent' ? 'user' : 'assistant', content: msg.text })),
+                { role: 'user', content: userMessage }
+              ],
+              model: "deepseek-chat",
             });
-            scrollToBottom();
-          }, 1000);
+
+            messages.value.push({
+              text: completion.choices[0].message.content,
+              type: 'received'
+            });
+            saveHistory();
+          } catch (error) {
+            console.error('Error fetching data from API:', error);
+          }
         } else {
-          // 文生图模式
           setTimeout(() => {
             messages.value.push({
               image: 'https://via.placeholder.com/300', // 这里替换为实际的图片生成API
               type: 'received',
             });
-            scrollToBottom();
+            saveHistory();
           }, 1000);
         }
 
@@ -89,11 +120,20 @@ export default {
       }
     };
 
+    const clearHistory = () => {
+      messages.value = [];
+      localStorage.removeItem('chatHistory');
+    };
+
     const scrollToBottom = () => {
       if (messageContainer.value) {
         messageContainer.value.scrollTop = messageContainer.value.scrollHeight;
       }
     };
+
+    onMounted(() => {
+      loadHistory();
+    });
 
     return {
       messages,
@@ -101,6 +141,7 @@ export default {
       mode,
       switchMode,
       sendMessage,
+      clearHistory,
       messageContainer,
     };
   },
@@ -111,7 +152,7 @@ export default {
 .chat-container {
   width: 100%;
   max-width: 1200px;
-  height: 900px;
+  height: 700px;
   margin: 0 auto;
   border: 1px solid #ddd;
   display: flex;
@@ -213,5 +254,14 @@ export default {
 
 .chat-input button:hover {
   background-color: #0056b3;
+}
+.clear-history-button {
+  padding: 10px 20px;
+  background-color: #FF4D4F;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-right: 10px; /* 与输入框保持一定间距 */
 }
 </style>

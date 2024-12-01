@@ -27,6 +27,7 @@
     "element-plus": "^2.2.26",
     "gxd-file-preview": "^1.2.1",
     "jquery": "^3.6.1",
+    "openai": "^4.73.1",
     "vue": "^3.2.41",
     "vue-dplayer": "^0.0.10",
     "vue-router": "^4.1.6",
