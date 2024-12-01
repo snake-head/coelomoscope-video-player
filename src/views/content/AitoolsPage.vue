@@ -78,6 +78,17 @@ export default {
       saveHistory(); // 清空后保存
     };
 
+    const clearHistory = () => {
+      messages.value = [];
+      localStorage.removeItem('chatHistory');
+    };
+
+    const scrollToBottom = () => {
+      if (messageContainer.value) {
+        messageContainer.value.scrollTop = messageContainer.value.scrollHeight;
+      }
+    };
+
     const sendMessage = async () => {
       if (newMessage.value.trim()) {
         const userMessage = newMessage.value;
@@ -86,19 +97,33 @@ export default {
 
         if (mode.value === 'chat') {
           try {
-            const completion = await openai.chat.completions.create({
+            // 创建一个临时的消息对象来存储流式输出
+            const tempMessage = { text: '', type: 'received' };
+            messages.value.push(tempMessage);
+
+            // 使用流式响应
+            const stream = await openai.chat.completions.create({
               messages: [
                 { role: 'system', content: systemPrompt }, // 添加系统提示
                 ...messages.value.map(msg => ({ role: msg.type === 'sent' ? 'user' : 'assistant', content: msg.text })),
                 { role: 'user', content: userMessage }
               ],
               model: "deepseek-chat",
+              stream: true,
             });
 
-            messages.value.push({
-              text: completion.choices[0].message.content,
-              type: 'received'
-            });
+            for await (const part of stream) {
+              if (part.choices && part.choices[0].delta.content) {
+                // 更新临时消息对象的内容
+                tempMessage.text += part.choices[0].delta.content;
+
+                // 强制Vue重新渲染
+                nextTick(() => {
+                  scrollToBottom();
+                });
+              }
+            }
+
             saveHistory();
           } catch (error) {
             console.error('Error fetching data from API:', error);
@@ -117,17 +142,6 @@ export default {
         nextTick(() => {
           scrollToBottom();
         });
-      }
-    };
-
-    const clearHistory = () => {
-      messages.value = [];
-      localStorage.removeItem('chatHistory');
-    };
-
-    const scrollToBottom = () => {
-      if (messageContainer.value) {
-        messageContainer.value.scrollTop = messageContainer.value.scrollHeight;
       }
     };
 
