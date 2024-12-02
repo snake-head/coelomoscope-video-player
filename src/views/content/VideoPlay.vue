@@ -18,6 +18,12 @@ import '@vue-flow/core/dist/style.css';
 import { MarkerType } from '@vue-flow/core'
 import { useStore } from 'vuex';
 import CryptoJS from 'crypto-js'
+import OpenAI from 'openai';
+const openai = new OpenAI({
+  baseURL: 'https://api.deepseek.com',
+  dangerouslyAllowBrowser: true,
+  apiKey: import.meta.env.VITE_API_KEY
+});
 const store = useStore();
 const route = useRoute();
 const router = useRouter();
@@ -67,18 +73,37 @@ const audioUrl = ref('')
 const generateCaption = async () => {
   activeName.value = 'caption';
   captionTime.value = formattedTime.value;
-  const captionList = activeVideo.metadata.caption;
-
-  // 在请求开始前设置captionContent为"分析中"
-  captionContent.value = "分析中";
+  
+  // 设置初始状态
+  captionContent.value = "分析中...";
 
   try {
+    // 获取原始字幕
     const resp = await getVideoCaption(activeVideo.videoId, videoPlaybackTimes.value[activeVideo.videoId]);
-    // 请求完成后更新captionContent
-    captionContent.value = resp.code.description;
+    const originalText = resp.code.description;
+
+    // 调用OpenAI进行翻译
+    const completion = await openai.chat.completions.create({
+      messages: [
+        {
+          role: "user",
+          content: `请将以下英文翻译成中文:\n${originalText}`
+        }
+      ],
+      model: "deepseek-chat",
+      stream: true
+    });
+
+    // 流式输出翻译结果
+    captionContent.value = '';
+    for await (const chunk of completion) {
+      if (chunk.choices[0]?.delta?.content) {
+        captionContent.value += chunk.choices[0].delta.content;
+      }
+    }
+
   } catch (error) {
-    // 如果发生错误，可以在这里处理错误情况，并可能更新captionContent以反映错误
-    console.error('获取视频字幕失败:', error);
+    console.error('获取或翻译字幕失败:', error);
     captionContent.value = "获取字幕失败，请稍后再试。";
   }
 }
@@ -449,9 +474,9 @@ panOnDrag.value = false;
                   <div class="video-caption-wrapper">
                     <div class="video-time-audio">
                       <div class="video-caption-time">时间：{{ captionTime }}</div>
-                      <audio :key="audioUrl" controls>
+                      <!-- <audio :key="audioUrl" controls>
                         <source :src="audioUrl">
-                      </audio>
+                      </audio> -->
                     </div>
                     <div class="video-caption-content">描述：{{ captionContent }}</div>
                   </div>
