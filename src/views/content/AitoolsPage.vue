@@ -294,7 +294,7 @@ export default {
 .chat-container {
   width: 100%;
   max-width: 1200px;
-  height: 700px;
+  height: 80vh;
   margin: 0 auto;
   border: 1px solid #ddd;
   display: flex;
