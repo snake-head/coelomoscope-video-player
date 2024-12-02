@@ -22,15 +22,35 @@
     </div>
     <div class="chat-input">
       <button @click="clearHistory" class="clear-history-button">清空历史</button>
-      <input
-        type="text"
-        v-model="newMessage"
-        @keyup.enter="sendMessage"
-        :placeholder="mode === 'chat' ? '输入问题...' : '输入图片描述...'"
-      />
-      <button @click="sendMessage" class="send-button">
-        <el-icon><Promotion /></el-icon>
-      </button>
+      <!-- 根据模式显示不同的输入界面 -->
+      <div v-if="mode === 'chat'" class="single-input">
+        <input
+          type="text"
+          v-model="newMessage"
+          @keyup.enter="sendMessage"
+          :placeholder="'输入问题...'"
+        />
+        <button @click="sendMessage" class="send-button">
+          <el-icon><Promotion /></el-icon>
+        </button>
+      </div>
+      <div v-else class="triplet-input">
+        <select v-model="selectedEquipment" class="select-input">
+          <option disabled value="">请选择器械</option>
+          <option v-for="item in equipments" :key="item" :value="item">{{ item }}</option>
+        </select>
+        <select v-model="selectedAction" class="select-input">
+          <option disabled value="">请选择动作</option>
+          <option v-for="item in actions" :key="item" :value="item">{{ item }}</option>
+        </select>
+        <select v-model="selectedBodyPart" class="select-input">
+          <option disabled value="">请选择部位</option>
+          <option v-for="item in bodyParts" :key="item" :value="item">{{ item }}</option>
+        </select>
+        <button @click="sendTriplet" class="send-button">
+          <el-icon><Promotion /></el-icon>
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -174,6 +194,75 @@ export default {
       }
     };
 
+    // 三元组相关状态
+    const selectedEquipment = ref('');
+    const selectedAction = ref('');
+    const selectedBodyPart = ref('');
+
+    const equipments = ['grasper', 'bipolar', 'hook', 'scissors', 'clipper', 'irrigato'];
+    const actions = ['grasp', 'retract', 'dissect', 'coagulate', 'clip', 'cut', 'aspirate', 'irrigate', 'pack', 'null_verb'];
+    const bodyParts = ['gallbladder', 'cystic_plate', 'cystic_duct', 'cystic_artery', 'cystic_pedicle', 'blood_vessel', 'fluid', 'abdominal_wall_cavity', 'liver', 'adhesion', 'omentum'];
+
+    const sendTriplet = async () => {
+      if (selectedEquipment.value && selectedAction.value && selectedBodyPart.value) {
+        const triplet = {
+          equipment: selectedEquipment.value,
+          action: selectedAction.value,
+          bodyPart: selectedBodyPart.value,
+        };
+
+        const userTripletMessage = {
+          text: `器械: ${triplet.equipment}, 动作: ${triplet.action}, 部位: ${triplet.bodyPart}`,
+          type: 'sent',
+        };
+        imageMessages.value.push(userTripletMessage);
+        saveHistory();
+
+        try {
+          const messageIndex = messages.value.length;
+          messages.value.push({ image: '', type: 'received' });
+
+          // 调用生成图片的接口
+          // 这里假设有一个生成图片的 API，可根据实际情况修改
+          const imageUrl = await generateImageURL(triplet);
+
+          messages.value[messageIndex] = {
+            image: imageUrl,
+            type: 'received',
+          };
+
+          saveHistory();
+        } catch (error) {
+          console.error('Error generating image:', error);
+          messages.value.push({
+            text: '抱歉,生成图片时发生错误。',
+            type: 'received',
+          });
+        }
+
+        selectedEquipment.value = '';
+        selectedAction.value = '';
+        selectedBodyPart.value = '';
+
+        await nextTick();
+        scrollToBottom();
+      } else {
+        messages.value.push({
+          text: '请完整选择器械、动作和部位。',
+          type: 'received',
+        });
+        await nextTick();
+        scrollToBottom();
+      }
+    };
+
+    const generateImageURL = async (triplet) => {
+      // 实现图片生成的逻辑
+      // 这里只是模拟生成一个占位图片
+      const placeholderUrl = `https://via.placeholder.com/300?text=${triplet.equipment}+${triplet.action}+${triplet.bodyPart}`;
+      return placeholderUrl;
+    };
+
     onMounted(() => {
       loadHistory();
     });
@@ -189,6 +278,13 @@ export default {
       clearHistory,
       messageContainer,
       md, 
+      selectedEquipment,
+      selectedAction,
+      selectedBodyPart,
+      equipments,
+      actions,
+      bodyParts,
+      sendTriplet,
     };
   },
 };
@@ -198,7 +294,7 @@ export default {
 .chat-container {
   width: 100%;
   max-width: 1200px;
-  height: 80vh;
+  height: 700px;
   margin: 0 auto;
   border: 1px solid #ddd;
   display: flex;
@@ -248,7 +344,7 @@ export default {
 .avatar-icon {
   align-self: flex-start;
   font-size: 24px;
-  margin: 5px 10px;
+  margin: 0px 10px;
 }
 
 .message-content {
@@ -275,36 +371,58 @@ export default {
 }
 
 .chat-input {
+  display: flex;
+  align-items: center;
   padding: 20px;
   background-color: white;
   border-top: 1px solid #ddd;
-  display: flex;
   gap: 10px;
+}
+
+.single-input {
+  flex: 1;
+  display: flex;
 }
 
 .chat-input input {
   flex: 1;
-  padding: 10px;
+  padding: 8px;
   border: 1px solid #ddd;
   border-radius: 5px;
   outline: none;
 }
 
-.chat-input button {
-  padding: 10px 20px;
-  background-color: #007AFF;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
+.chat-input input:focus {
+  border-color: #007AFF;
 }
 
-.chat-input button:hover {
-  background-color: #0056b3;
+.send-button {
+  padding: 8px 16px;
+  border: none;
+  background-color: #007AFF;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+  margin: 0 10px; /* 与输入框保持一定间距 */
 }
+
+.send-button:hover {
+  background-color: #005BBB;
+}
+
+.select-input {
+  width:310px;
+  margin: 5px;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  outline: none;
+  min-width: 150px;
+}
+
 .clear-history-button {
   padding: 10px 20px;
-  background-color: #FF4D4F;
+  background-color: #3484c6;
   color: white;
   border: none;
   border-radius: 5px;
