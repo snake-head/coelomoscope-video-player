@@ -406,6 +406,10 @@ export default {
   border-radius: 5px;
   cursor: pointer;
   margin: 0 10px; /* 与输入框保持一定间距 */
+  height: 36px;
+  display: flex;
+  align-items: center; /* 竖直方向居中 */
+  justify-content: center; /* 水平方向居中 */
 }
 
 .send-button:hover {
@@ -413,8 +417,8 @@ export default {
 }
 
 .select-input {
-  width:310px;
-  margin: 5px;
+  width: 30%;
+  margin: 0px 5px;
   padding: 8px;
   border: 1px solid #ddd;
   border-radius: 5px;
@@ -440,9 +444,12 @@ export default {
   border-radius: 5px;
   cursor: pointer;
   margin-right: 10px; /* 与输入框保持一定间距 */
+  width: 15%;
 }
 .triplet-input{
   flex: 1;
   display: flex;
+  align-items: center; /* 竖直方向居中 */
+  justify-content: center; /* 水平方向居中 */
 }
 </style>
