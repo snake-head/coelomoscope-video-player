@@ -2,136 +2,120 @@
  * @Description: 
  * @Version: 1.0
  * @Autor: ZhuYichen
- * @Date: 2023-09-01 12:52:35
- * @LastEditors: MaZhe
- * @LastEditTime: 2024-07-18 14:47:05
+ * @Date: 2023-08-31 22:43:50
+ * @LastEditors: ZhuYichen
+ * @LastEditTime: 2024-07-25 13:04:19
 -->
 <template>
-  <div class="main-container">
-    <header class="my-header">
-      <h1 class="first-heading">
-        <span class="mw-page-title-namespace">分类:{{ category.categoryName }}</span>
-      </h1>
-    </header>
-    <p>本分类含有 {{ subpageLinksLength }} 个页面。</p>
-    <div class="category-container">
-      <div class="subpage-link-box" v-for="(subpages, index) in filteredSubpages" :key="index">
-        <div class="subpages-container">
-          <SubGroup :subpages="subpages" />
-        </div>  
+  <div class="category-display-table">
+    <div class="category-display-table-row" v-for="category in categories" :key="category.categoryId">
+      <div class="category-display-table-row__item">
+        <CategoryGroup :category="category" />
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import SubGroup from './SubGroup.vue';
-import { computed } from 'vue';
+import CategoryGroup from '../../components/knowledge/CategoryGroup.vue';
+import { ref } from 'vue';
 
-const props = defineProps({
-  category: {
-    type: Object,
-    required: true,
+const categories = ref([
+  {
+    categoryName: '泌尿外科',
+    categoryId: 0,
+    subpages: ['肾上腺', '前列腺癌', '前列腺', '肾癌', '膀胱', '睾丸']
+  },
+  {
+    categoryName: '肝胆系统',
+    categoryId: 1,
+    subpages: ['肝炎', '肝硬化', '胆结石', '肝癌', '胆囊炎']
+  },
+  {
+    categoryName: '脾腺疾病',
+    categoryId: 2,
+    subpages: ['脾功能亢进', '脾破裂', '脾肿瘤', '脾炎', '脾脏手术']
+  },
+  {
+    categoryName: '胃肠外科',
+    categoryId: 3,
+    subpages: ['胃癌', '残胃癌', '胃及十二指肠溃疡', '胃灼热']
+  },
+  {
+    categoryName: '妇科疾病',
+    categoryId: 4,
+    subpages: ['月经失调', '卵巢囊肿', '子宫肌瘤', '子宫内膜异位症', '妇科肿瘤']
+  },
+  {
+    categoryName: '胸外科',
+    categoryId: 5,
+    subpages: ['肺癌', '支气管镜检查', '胸痛', '胸部X光']
   }
-});
-
-const subpageLinksLength = computed(() => props.category.subpages.length);
-
-function filterByFirstChar(stringList) {
-  // 创建一个空对象，用于存储分组后的子列表
-  const groupedLists = {};
-
-  // 遍历字符串列表
-  stringList.forEach((str) => {
-    // 获取字符串的首字母或第一个汉字
-    const firstChar = str.charAt(0);
-
-    // 如果首字母是中文字符，可以使用正则表达式来判断是否为中文
-    if (/[\u4e00-\u9fa5]/.test(firstChar)) {
-      // 使用中文字符的首字母作为键
-      const key = firstChar;
-      // 如果键不存在，则创建一个新的数组
-      groupedLists[key] = groupedLists[key] || [];
-      // 将字符串添加到相应的子列表中
-      groupedLists[key].push(str);
-    } else {
-      // 使用英文字符的首字母作为键，将小写字母转换为大写，以便区分大小写
-      const key = firstChar.toUpperCase();
-      // 如果键不存在，则创建一个新的数组
-      groupedLists[key] = groupedLists[key] || [];
-      // 将字符串添加到相应的子列表中
-      groupedLists[key].push(str);
-    }
-  });
-
-  // 现在，groupedLists 包含了按首字母或汉字分组后的子列表
-  return groupedLists;
-}
-
-const filteredSubpages = computed(() => filterByFirstChar(props.category.subpages));
+]);
 </script>
 
 <style scoped>
-.main-container {
-  padding: 0 50px;
-  text-align: left;
-  font-family: "STSong", "华文中宋", serif; /* 设置字体为华文中宋 */
-}
-
-.my-header {
-  position: relative;
-  display: flex;
-  flex-wrap: nowrap;
-  box-shadow: 0 1px #a2a9b1;
-  align-items: center;
-  margin-bottom: 5px;
-}
-
-.category-container {
+.category-display-table {
+  font-family: "STSong", "华文中宋", serif; /* 设置为华文中宋字体 */
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* 使每个子版块最小宽度为300px */
-  gap: 1em; /* 控制子版块之间的间距 */
-  margin-top: 1em;
+  grid-template-columns: repeat(3, 1fr); /* 每行最多显示 3 个板块 */
+  gap: 1em; /* 控制板块之间的间距 */
+  max-width: 90%; /* 占据整个页面的 90% 宽度 */
+  margin: 0 auto;
+  padding: 1em;
+  background-color: #f9f9f9;
+  border-radius: 8px;
 }
 
-.subpage-link-box {
+
+.category-display-table-row {
   display: flex;
-  flex-direction: column;
-  border: none;
+  align-items: stretch;
 }
 
-.subpages-container {
-  padding: 0.5em;
-  background-color: #f5f5f5;
-  border-radius: 4px;
+.category-display-table-row__item {
+  flex-grow: 1;
+  padding: 1em;
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   transition: box-shadow 0.3s ease;
+  word-break: break-word; /* 防止文字过长导致溢出 */
 }
 
-.subpages-container:hover {
+.category-display-table-row__item:hover {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
-.subpages-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1em; /* 控制每个 subpage 间的间距 */
+.category-display-table-row__item h3 {
+  margin-top: 0;
+  font-size: 1.2em;
+  color: #333;
+  font-weight: 600;
+  text-align: center;
 }
 
-.subpage-item {
-  font-size: 1em;
+.category-display-table-row__item p {
+  line-height: 1.5;
+  margin: 0;
   color: #666;
-  white-space: normal; /* 允许文字正常换行 */
-  word-break: break-word; /* 防止文字过长而溢出 */
+  font-size: 0.9em;
+  word-wrap: break-word; /* 确保长文字在宽度不足时换行 */
 }
 
-.first-heading {
-  margin-bottom: 10px; /* 添加底部间距 */
-  text-align: left; /* 将标题文本靠左对齐 */
-  font-size: 1.8em;
-  font-family: "STSong", "华文中宋", serif; /* 确保标题使用华文中宋 */
-  /*font-family: 'Linux Libertine', 'Georgia', 'Times', serif;*/
-  line-height: 1.375;
-  font-weight: normal;
+/* 媒体查询，确保在小屏幕时每个板块宽度足够 */
+/* 使用媒体查询确保在小屏幕上板块适应性显示 */
+@media (max-width: 1500px) {
+  .category-display-table {
+    grid-template-columns: repeat(2, 1fr); /* 中等屏幕每行显示 2 个板块 */
+  }
 }
+
+@media (max-width: 1200px) {
+  .category-display-table {
+    grid-template-columns: 1fr; /* 小屏幕每行显示 1 个板块 */
+  }
+}
+
 </style>
