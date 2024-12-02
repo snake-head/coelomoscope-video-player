@@ -3,8 +3,8 @@
  * @Version: 1.0
  * @Autor: MaZhe
  * @Date: 2023-05-23 15:25:36
- * @LastEditors: MaZhe
- * @LastEditTime: 2024-01-12 15:15:06
+ * @LastEditors: ZhuYichen
+ * @LastEditTime: 2024-12-02 14:26:09
 -->
 <template>
   <div class="button-container" @mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave">
@@ -199,7 +199,7 @@ const handleMouseLeave = () => {
 
 .tooltipAgent {
   position: fixed;
-
+  width: 85px;
   transform: translateX(-50%);
   background-color: rgba(0, 0, 0, 0.7);
   color: white;
@@ -227,7 +227,7 @@ button {
   padding: 0;
   overflow: hidden;
   position: fixed;
-  left: 20px;
+  right: 20px;
   bottom: 20px;
   transition: background-color 0.3s ease;
   z-index: 9999;
