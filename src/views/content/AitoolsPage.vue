@@ -371,6 +371,7 @@ export default {
 }
 
 .chat-input {
+  height: 40px;
   display: flex;
   align-items: center;
   padding: 20px;
@@ -380,6 +381,7 @@ export default {
 }
 
 .single-input {
+  margin-left: 5px;
   flex: 1;
   display: flex;
 }
@@ -420,6 +422,16 @@ export default {
   min-width: 150px;
 }
 
+/* 未选择时的默认文字颜色 */
+.select-input:invalid {
+  color: #999;
+}
+
+/* 选择后的文字颜色 */
+.select-input:valid {
+  color: #000;
+}
+
 .clear-history-button {
   padding: 10px 20px;
   background-color: #3484c6;
@@ -428,5 +440,9 @@ export default {
   border-radius: 5px;
   cursor: pointer;
   margin-right: 10px; /* 与输入框保持一定间距 */
+}
+.triplet-input{
+  flex: 1;
+  display: flex;
 }
 </style>
