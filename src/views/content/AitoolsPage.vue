@@ -16,7 +16,7 @@
         </el-icon>
         <div class="message-content">
           <img v-if="message.image" :src="message.image" class="generated-image" />
-          <span v-else>{{ message.text }}</span>
+          <div v-else v-html="md.render(message.text)"></div>
         </div>
       </div>
     </div>
@@ -39,11 +39,12 @@
 import { ref, onMounted, nextTick } from 'vue';
 import { Avatar, User, Promotion } from '@element-plus/icons-vue';
 import OpenAI from 'openai';
-
+import MarkdownIt from 'markdown-it'; // 添加这行
+const md = new MarkdownIt(); 
 const openai = new OpenAI({
   baseURL: 'https://api.deepseek.com',
   dangerouslyAllowBrowser: true,
-  apiKey: 'sk-c58b3119d46a4d558d6da4fd7116824c'
+  apiKey: import.meta.env.VITE_API_KEY
 });
 
 export default {
@@ -97,41 +98,48 @@ export default {
 
         if (mode.value === 'chat') {
           try {
-            // 创建一个临时的消息对象来存储流式输出
-            const tempMessage = { text: '', type: 'received' };
-            messages.value.push(tempMessage);
+            // 创建一个临时消息索引
+            const messageIndex = messages.value.length;
+            messages.value.push({ text: '', type: 'received' });
 
             // 使用流式响应
             const stream = await openai.chat.completions.create({
               messages: [
-                { role: 'system', content: systemPrompt }, // 添加系统提示
+                { role: 'system', content: systemPrompt },
                 ...messages.value.map(msg => ({ role: msg.type === 'sent' ? 'user' : 'assistant', content: msg.text })),
                 { role: 'user', content: userMessage }
               ],
-              model: "deepseek-chat",
+              model: "deepseek-chat", 
               stream: true,
             });
 
+            // 使用响应式更新
+            let accumulatedText = '';
             for await (const part of stream) {
               if (part.choices && part.choices[0].delta.content) {
-                // 更新临时消息对象的内容
-                tempMessage.text += part.choices[0].delta.content;
-
-                // 强制Vue重新渲染
-                nextTick(() => {
-                  scrollToBottom();
-                });
+                accumulatedText += part.choices[0].delta.content;
+                // 使用数组索引更新来触发响应式更新
+                messages.value[messageIndex] = {
+                  text: accumulatedText,
+                  type: 'received'
+                };
+                await nextTick();
+                scrollToBottom();
               }
             }
 
             saveHistory();
           } catch (error) {
             console.error('Error fetching data from API:', error);
+            messages.value.push({
+              text: '抱歉,发生了一些错误,请稍后再试。',
+              type: 'received'
+            });
           }
         } else {
           setTimeout(() => {
             messages.value.push({
-              image: 'https://via.placeholder.com/300', // 这里替换为实际的图片生成API
+              image: 'https://via.placeholder.com/300',
               type: 'received',
             });
             saveHistory();
@@ -139,9 +147,8 @@ export default {
         }
 
         newMessage.value = '';
-        nextTick(() => {
-          scrollToBottom();
-        });
+        await nextTick();
+        scrollToBottom();
       }
     };
 
@@ -157,6 +164,7 @@ export default {
       sendMessage,
       clearHistory,
       messageContainer,
+      md, 
     };
   },
 };
@@ -214,13 +222,14 @@ export default {
 }
 
 .avatar-icon {
+  align-self: flex-start;
   font-size: 24px;
-  margin: 0 10px;
+  margin: 5px 10px;
 }
 
 .message-content {
   max-width: 70%;
-  padding: 10px 15px;
+  padding: 0px 15px;
   border-radius: 15px;
   word-wrap: break-word;
   text-align: left;
