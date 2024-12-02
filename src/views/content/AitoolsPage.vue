@@ -36,7 +36,7 @@
 </template>
 
 <script>
-import { ref, onMounted, nextTick } from 'vue';
+import { ref, onMounted, nextTick, computed } from 'vue';
 import { Avatar, User, Promotion } from '@element-plus/icons-vue';
 import OpenAI from 'openai';
 import MarkdownIt from 'markdown-it'; // 添加这行
@@ -54,7 +54,8 @@ export default {
     Promotion,
   },
   setup() {
-    const messages = ref([]);
+    const chatMessages = ref([]);
+    const imageMessages = ref([]);
     const newMessage = ref('');
     const mode = ref('chat'); // 'chat' 或 'image'
     const messageContainer = ref(null);
@@ -63,25 +64,42 @@ export default {
     const systemPrompt = "你是微创手术视频示教平台的ai助手，你需要回答用户所有关于医学或手术相关的问题，其他问题你可以拒绝回答。";
 
     const loadHistory = () => {
-      const history = localStorage.getItem('chatHistory');
-      if (history) {
-        messages.value = JSON.parse(history);
+      const chatHistory = localStorage.getItem('chatHistory');
+      const imageHistory = localStorage.getItem('imageHistory');
+      if (chatHistory) {
+        chatMessages.value = JSON.parse(chatHistory);
+      }
+      if (imageHistory) {
+        imageMessages.value = JSON.parse(imageHistory);
       }
     };
 
     const saveHistory = () => {
-      localStorage.setItem('chatHistory', JSON.stringify(messages.value));
+      if (mode.value === 'chat') {
+        localStorage.setItem('chatHistory', JSON.stringify(chatMessages.value));
+      } else {
+        localStorage.setItem('imageHistory', JSON.stringify(imageMessages.value));
+      }
     };
 
     const switchMode = (newMode) => {
       mode.value = newMode;
-      messages.value = []; // 切换模式时清空消息
-      saveHistory(); // 清空后保存
+      // 不清空消息，只切换显示
     };
 
+    // 计算属性用于显示当前模式的消息
+    const messages = computed(() => {
+      return mode.value === 'chat' ? chatMessages.value : imageMessages.value;
+    });
+
     const clearHistory = () => {
-      messages.value = [];
-      localStorage.removeItem('chatHistory');
+      if (mode.value === 'chat') {
+        chatMessages.value = [];
+        localStorage.removeItem('chatHistory');
+      } else {
+        imageMessages.value = [];
+        localStorage.removeItem('imageHistory');
+      }
     };
 
     const scrollToBottom = () => {
@@ -93,7 +111,11 @@ export default {
     const sendMessage = async () => {
       if (newMessage.value.trim()) {
         const userMessage = newMessage.value;
-        messages.value.push({ text: userMessage, type: 'sent' });
+        if (mode.value === 'chat') {
+          chatMessages.value.push({ text: userMessage, type: 'sent' });
+        } else {
+          imageMessages.value.push({ text: userMessage, type: 'sent' });
+        }
         saveHistory();
 
         if (mode.value === 'chat') {
@@ -158,6 +180,8 @@ export default {
 
     return {
       messages,
+      chatMessages,
+      imageMessages,
       newMessage,
       mode,
       switchMode,
