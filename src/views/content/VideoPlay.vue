@@ -183,8 +183,7 @@ onMounted(async () => {
 watch(
   () => enforceOptions.isAiIdentify,
   (isAiIdentify) => {
-    // TODO 智能标注显示
-    console.log(isAiIdentify);
+    videoPlayer.value.switchSmartAnnotationMode(isAiIdentify);
   }
 );
 

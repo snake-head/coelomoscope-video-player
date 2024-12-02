@@ -68,6 +68,7 @@ export default {
         ...subtitle ? { subtitle } : {},  // 使用条件扩展来决定是否包含subtitle
       },
       isDehazed: false,
+      isAiIdentify: false,
       baseQualityIndex: 0,
       currentPlaybackTime: 0,
     }
@@ -75,6 +76,9 @@ export default {
   methods: {
     switchHazeMode(requireDehaze) {
       this.isDehazed = Boolean(requireDehaze)
+    },
+    switchSmartAnnotationMode(requireSmartAnnotation) {
+      this.isAiIdentify = Boolean(requireSmartAnnotation)
     },
     customInitDplayer() {
       this.dplayer = this.$refs.dplayer.dp;
@@ -116,6 +120,7 @@ export default {
       const { height, width } = this.dplayer.quality.meta;
       await new Promise(resolve => {
         const intervalId = setInterval(() => {
+          // this.dashPlayer.getBitrateInfoListFor("video")：当前获取到的有效视频总数
           if (this.dashPlayer.getBitrateInfoListFor("video")?.length > 0) {
             clearInterval(intervalId);
             resolve()
@@ -132,7 +137,16 @@ export default {
   },
   computed: {
     bitrateIndex() {
-      return this.isDehazed ? this.baseQualityIndex + 1 : this.baseQualityIndex;
+      // return this.isDehazed ? this.baseQualityIndex + 1 : this.baseQualityIndex;
+      if (this.isDehazed ) {
+        return this.baseQualityIndex + 1;
+      }
+      else if (this.isAiIdentify) {
+        return this.baseQualityIndex + 3;
+      }
+      else {
+        return this.baseQualityIndex;
+      }
     }
   },
   watch: {
