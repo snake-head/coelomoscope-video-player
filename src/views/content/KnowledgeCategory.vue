@@ -16,6 +16,7 @@
   </div>
 </template>
 
+
 <script setup>
 import CategoryGroup from '../../components/knowledge/CategoryGroup.vue';
 import { ref } from 'vue';

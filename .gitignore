@@ -29,3 +29,4 @@ src/assets/videos/*
 #vscode
 .vscode
 coelomoscope-video-player.code-workspace
+src/views/content/KnowledgeCategory.vue
