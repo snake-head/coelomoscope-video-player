@@ -29,3 +29,8 @@ src/assets/videos/*
 #vscode
 .vscode
 coelomoscope-video-player.code-workspace
+
+.env.development
+.env.production
+.env.local
+*.env
