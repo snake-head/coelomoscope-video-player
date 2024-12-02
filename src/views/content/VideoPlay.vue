@@ -8,6 +8,7 @@ import { getCourseByCourseId, getCourseTypeById } from "../../utils/request/cour
 import {
   getVideoByVideoId,
   getVideosByCourseId,
+  getVideoCaption,
 } from "../../utils/request/video";
 import { toCourseDetail } from "../../utils/router/routeJumper";
 import { ElSteps, ElStep } from "element-plus";
@@ -63,27 +64,23 @@ function createURLWithMD5(text) {
 const captionTime = ref('未指定')
 const captionContent = ref('')
 const audioUrl = ref('')
-const generateCaption = ()=>{
-  activeName.value = 'caption'
-  captionTime.value = formattedTime.value
-  const captionList = activeVideo.metadata.caption
-  for (let i = 0; i < captionList.length; i++) {
-    const captionObj = captionList[i]
-    console.log(captionObj.time, videoPlaybackTimes.value[activeVideo.videoId])
-    if (captionObj.time > videoPlaybackTimes.value[activeVideo.videoId]){
-      if(i==0){
-        captionContent.value = '准备阶段'
-        audioUrl.value = createURLWithMD5('准备阶段')
-      }else{
-        captionContent.value = captionList[i-1].text
-        audioUrl.value = createURLWithMD5(captionList[i-1].text)
-      }
-      break;
-    }
-    captionContent.value = captionList[i].text
-    audioUrl.value = createURLWithMD5(captionList[i].text)
-}
-  // captionContent.value = '在手术影像中，医生正在使用位于画面左侧的双极钳来牵拉手术区域内的组织。这种工具对于提供手术所需的暴露和张力至关重要，以确保操作的精准性。画面右侧可以看到单极弯曲剪刀，表明切割或解剖可能是手术程序的一部分。手术焦点所在的肾脏部分遮盖，仅在图像顶部部分可见，显示手术区域集中在此。肾脏下方可见小肠，位于图像的下方，表明手术区域位于腹腔内。医生熟练操控这些工具对手术的成功完成至关重要。'
+const generateCaption = async () => {
+  activeName.value = 'caption';
+  captionTime.value = formattedTime.value;
+  const captionList = activeVideo.metadata.caption;
+
+  // 在请求开始前设置captionContent为"分析中"
+  captionContent.value = "分析中";
+
+  try {
+    const resp = await getVideoCaption(activeVideo.videoId, videoPlaybackTimes.value[activeVideo.videoId]);
+    // 请求完成后更新captionContent
+    captionContent.value = resp.code.description;
+  } catch (error) {
+    // 如果发生错误，可以在这里处理错误情况，并可能更新captionContent以反映错误
+    console.error('获取视频字幕失败:', error);
+    captionContent.value = "获取字幕失败，请稍后再试。";
+  }
 }
 const enforceOptions = reactive({
   isAiIdentify: false,

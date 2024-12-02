@@ -43,7 +43,7 @@ import OpenAI from 'openai';
 const openai = new OpenAI({
   baseURL: 'https://api.deepseek.com',
   dangerouslyAllowBrowser: true,
-  apiKey: ''
+  apiKey: 'sk-c58b3119d46a4d558d6da4fd7116824c'
 });
 
 export default {
