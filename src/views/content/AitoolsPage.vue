@@ -16,38 +16,56 @@
 </template>
 
 <script>
-  export default {
-    data() {
-      return {
-        messages: [],
-        newMessage: ''
-      }
-    },
-    methods: {
-      sendMessage() {
-        if (this.newMessage.trim()) {
-          this.messages.push({
-            text: this.newMessage,
-            type: 'sent'
+import OpenAI from 'openai';
+
+const apiKey = import.meta.env.VITE_API_KEY;
+
+const openai = new OpenAI({
+  baseURL: 'https://api.deepseek.com',
+  dangerouslyAllowBrowser: true,
+  apiKey: apiKey 
+});
+
+export default {
+  data() {
+    return {
+      messages: [],
+      newMessage: ''
+    }
+  },
+  methods: {
+    async sendMessage() {
+      if (this.newMessage.trim()) {
+        const userMessage = this.newMessage;
+        this.messages.push({
+          text: this.newMessage,
+          type: 'sent'
+        });
+        this.newMessage = '';
+        try {
+          const completion = await openai.chat.completions.create({
+            messages: [{ role: "system", content: userMessage }],
+            model: "deepseek-chat",
           });
-          this.newMessage = '';
-          // 模拟回复
-          setTimeout(() => {
-            this.messages.push({
-              text: '这是一条自动回复消息',
-              type: 'received'
-            });
-          }, 1000);
+
+          this.messages.push({
+            text: completion.choices[0].message.content,
+            type: 'received'
+          });
+        } catch (error) {
+          console.error('Error sending message:', error);
+          messages.value.push({ role: 'ai', content: '抱歉，我无法处理你的请求。' });
         }
       }
-    },
-    updated() {
-      this.$nextTick(() => {
-        const container = this.$refs.messageContainer;
-        container.scrollTop = container.scrollHeight;
-      });
     }
+  },
+  updated() {
+    this.$nextTick(() => {
+      const container = this.$refs.messageContainer;
+      container.scrollTop = container.scrollHeight;
+    });
   }
+}
 </script>
 
 <style scoped>
