@@ -99,6 +99,7 @@ const generateCaption = async () => {
     for await (const chunk of completion) {
       if (chunk.choices[0]?.delta?.content) {
         captionContent.value += chunk.choices[0].delta.content;
+        captionContent.value = captionContent.value.replace('小肠', '腹壁')
       }
     }
 
