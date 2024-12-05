@@ -68,6 +68,15 @@ const openai = new OpenAI({
 });
 
 export default {
+  // data() {
+  //   return {
+  //     equipments: ['grasper', 'bipolar', 'hook', 'scissors', 'clipper', 'irrigater'],
+  //     selectedEquipment: '',
+  //     selectedAction: '',
+  //     selectedBodyPart: '',
+  //     loading: false,
+  //   }
+  // },
   components: {
     Avatar,
     User,
@@ -77,8 +86,10 @@ export default {
     const chatMessages = ref([]);
     const imageMessages = ref([]);
     const newMessage = ref('');
+    const newMessage1 = ref('');
     const mode = ref('chat'); // 'chat' 或 'image'
     const messageContainer = ref(null);
+    let picturePathFolder;
     
     // 系统提示
     const systemPrompt = "你是微创手术视频示教平台的ai助手，你需要回答用户所有关于医学或手术相关的问题，其他问题你可以拒绝回答。";
@@ -127,15 +138,15 @@ export default {
         messageContainer.value.scrollTop = messageContainer.value.scrollHeight;
       }
     };
-
     const sendMessage = async () => {
       if (newMessage.value.trim()) {
         const userMessage = newMessage.value;
         if (mode.value === 'chat') {
           chatMessages.value.push({ text: userMessage, type: 'sent' });
-        } else {
-          imageMessages.value.push({ text: userMessage, type: 'sent' });
-        }
+        } 
+        // else {
+        //   imageMessages.value.push({ text: userMessage, type: 'sent' });
+        // }
         saveHistory();
 
         if (mode.value === 'chat') {
@@ -215,7 +226,9 @@ export default {
           text: `器械: ${triplet.equipment}, 动作: ${triplet.action}, 部位: ${triplet.bodyPart}`,
           type: 'sent',
         };
-        imageMessages.value.push(userTripletMessage);
+        // imageMessages.value.push(userTripletMessage);
+        imageMessages.value.push({ text: `器械: ${triplet.equipment}, 动作: ${triplet.action}, 部位: ${triplet.bodyPart}`, 
+          type: 'sent' });
         saveHistory();
 
         try {
@@ -224,14 +237,24 @@ export default {
 
           // 调用生成图片的接口
           // 这里假设有一个生成图片的 API，可根据实际情况修改
-          const imageUrl = await generateImageURL(triplet);
+          // const imageUrl = await generateImageURL(triplet);
+          // const imageUrl = await imageUrl();
 
-          messages.value[messageIndex] = {
-            image: imageUrl,
-            type: 'received',
-          };
-
-          saveHistory();
+          // messages.value[messageIndex] = {
+          //   // image: imageUrl,
+          //   image: picturePathFolder,
+          //   type: 'received',
+          // };
+          
+          setTimeout(()=> {
+            picturePathFolder = `https://omentor.vico-lab.com:3443/resource/media/${triplet.equipment}_${triplet.action}_${triplet.bodyPart}/0.png`;
+            messages.value[messageIndex] = {
+              image: picturePathFolder,
+              type: 'received',
+            };
+            saveHistory();
+            scrollToBottom();
+          }, 600)
         } catch (error) {
           console.error('Error generating image:', error);
           messages.value.push({
@@ -245,7 +268,7 @@ export default {
         selectedBodyPart.value = '';
 
         await nextTick();
-        scrollToBottom();
+        
       } else {
         messages.value.push({
           text: '请完整选择器械、动作和部位。',
