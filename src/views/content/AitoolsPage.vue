@@ -254,7 +254,7 @@ export default {
             };
             saveHistory();
             scrollToBottom();
-          }, 600)
+          }, 2000)
         } catch (error) {
           console.error('Error generating image:', error);
           messages.value.push({
