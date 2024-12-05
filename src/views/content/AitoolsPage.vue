@@ -231,27 +231,13 @@ export default {
           type: 'sent' });
         saveHistory();
 
-        try {
-          const messageIndex = messages.value.length;
-          messages.value.push({ image: '', type: 'received' });
-
-          // 调用生成图片的接口
-          // 这里假设有一个生成图片的 API，可根据实际情况修改
-          // const imageUrl = await generateImageURL(triplet);
-          // const imageUrl = await imageUrl();
-
-          // messages.value[messageIndex] = {
-          //   // image: imageUrl,
-          //   image: picturePathFolder,
-          //   type: 'received',
-          // };
-          
+        try {  
           setTimeout(()=> {
             picturePathFolder = `https://omentor.vico-lab.com:3443/resource/media/${triplet.equipment}_${triplet.action}_${triplet.bodyPart}/0.png`;
-            messages.value[messageIndex] = {
+            messages.value.push({
               image: picturePathFolder,
               type: 'received',
-            };
+            });
             saveHistory();
             scrollToBottom();
           }, 2000)
@@ -268,7 +254,6 @@ export default {
         selectedBodyPart.value = '';
 
         await nextTick();
-        
       } else {
         messages.value.push({
           text: '请完整选择器械、动作和部位。',
