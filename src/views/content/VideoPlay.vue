@@ -48,6 +48,7 @@ const activeVideo = reactive({
   resolutionVersion: [],
   metadata: {},
   triplet: "",
+  surgery_info: {},
 });
 
 const activeName = ref('step')
@@ -436,7 +437,7 @@ panOnDrag.value = false;
               v-if="hasDataPrepared"
             ></VideoPlayer>
           </div>
-          <div class="operation-steps">
+          <div class="operation-steps" v-if="activeVideo.courseId!='cid202412201519'">
               <div class="step-and-button">
                 <!-- <div class="info-header">手术步骤</div> -->
                 <el-button type="primary" plain @click="generateCaption">生成描述</el-button>
@@ -493,15 +494,17 @@ panOnDrag.value = false;
                 <div class="info-header">受术者信息</div>
               </template>
               <el-descriptions-item label="年龄："
-                >30-40岁</el-descriptions-item
+                >{{ activeVideo.surgery_info.age || '不明' }}</el-descriptions-item
               >
-              <el-descriptions-item label="性别：">男</el-descriptions-item>
-              <el-descriptions-item label="身高体重：" :span="2"
-                >178cm/70kg</el-descriptions-item
+              <el-descriptions-item label="性别：">{{ activeVideo.surgery_info.sex || '不明' }}</el-descriptions-item>
+              <el-descriptions-item label="身高："
+                >{{ activeVideo.surgery_info.height || 'xxx ' }}cm</el-descriptions-item
+              >
+              <el-descriptions-item label="体重："
+                >{{ activeVideo.surgery_info.weight || 'xxx ' }}kg</el-descriptions-item
               >
               <el-descriptions-item label="术前情况：" :span="2">
-                xxxxxxxxxxxxxxxxxxxxxxxxxxxxx xxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-                xxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+                {{ activeVideo.surgery_info.condition || '不明' }}
               </el-descriptions-item>
             </el-descriptions>
           </el-card>
@@ -509,7 +512,7 @@ panOnDrag.value = false;
             <div class="operation-brief">
               <div class="info-header">手术简介</div>
               <div class="operation-brief__content content-textaria">
-                {{activeVideoCourse.courseDescription}}
+                {{activeVideo.courseId=='cid202412201519' ? activeVideo.surgery_info.introduction : activeVideoCourse.courseDescription}}
               </div>
             </div>
             
