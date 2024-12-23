@@ -36,7 +36,7 @@ export const getVideoByVideoId = async (videoId) => {
     .catch(err => err);
 }
 
-export const getAllVideos = async (page = 6, limit = 48) => {
+export const getAllVideos = async (page = 1, limit = 1000) => {
   return axios.get('/data/video', {
     params: {
       _page: page,

@@ -4,7 +4,7 @@
     <div :class="{'blur-background': !isLoggedIn}">
       <el-container direction="vertical">
         <div class="switch-chart">
-          <el-carousel type="card">
+            <el-carousel trigger="click" type="card" :autoplay="false">
             <el-carousel-item v-for="image in switchCardImages" :key="image">
               <el-image :src="image" style="height:100%;"></el-image>
             </el-carousel-item>
@@ -82,8 +82,10 @@ const loginUrl = 'https://national.medevice.pro/login.html';
 
 const router = useRouter();
 const LATEST_LENGTH = 16;
+import selectedCover from '../../assets/精选封面.jpg';
+
 const switchCardImages = [
-  "https://ts2.cn.mm.bing.net/th?id=OIP-C.f_sEou55jnzGiDFz58kCtwHaE4&w=307&h=203&c=8&rs=1&qlt=90&o=6&dpr=1.3&pid=3.1&rm=2",
+   selectedCover,
   "https://ts4.cn.mm.bing.net/th?id=OIP-C.mEq-DkBG0x_8Ykl4pNqAlQHaEO&w=331&h=188&c=8&rs=1&qlt=90&o=6&dpr=1.3&pid=3.1&rm=2",
   "https://tse3-mm.cn.bing.net/th/id/OIP-C.zHrHOI1ULHd0iSWTGqd3WAHaDk?w=336&h=168&c=7&r=0&o=5&dpr=1.3&pid=1.7",
   "https://ts1.cn.mm.bing.net/th?id=OIP-C.gKSO2Cw79snhIt_d0m3wVgHaD8&w=309&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7"
@@ -107,12 +109,12 @@ const getLatestCourses = () => {
 
 const getSpecificCourseVideos = () => {
   console.log('Fetching specific course videos...');
-  getAllVideos()
+  getAllVideos(1, 1000)
     .then(res => {
       console.log('Response data:', res); // 调试输出响应数据
       if (res && res.data && res.data.results) {
         specificCourseVideos.value = res.data.results.reverse(); // 倒序排列视频
-        console.log('Specific course videos:', specificCourseVideos.value); // 调试输出
+        // console.log('Specific course videos:', specificCourseVideos.value); 调试输出视频数据
         if (!specificCourseVideos.value || specificCourseVideos.value.length === 0) {
           console.warn('No videos found.');
         }
