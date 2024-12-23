@@ -1,7 +1,7 @@
 <template>
   <div class="video-card__wrap">
     <router-link 
-      :to="`/resource/${resource.id}/content`" 
+      :to="`/courseware/${resource.id}/content`" 
       style="display: block; width: 100%; height: 100%; text-decoration: none;">
       <div class="video-image" :style="{ backgroundImage: `url(${resource.coverImgUrl})`, backgroundSize: 'cover' }">
       </div>

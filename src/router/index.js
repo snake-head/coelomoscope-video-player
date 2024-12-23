@@ -4,7 +4,7 @@
  * @Autor: ZhuYichen
  * @Date: 2023-05-23 15:25:36
  * @LastEditors: ZhuYichen
- * @LastEditTime: 2024-11-29 16:11:34
+ * @LastEditTime: 2024-12-23 15:12:50
  */
 import {
   createRouter,
@@ -93,7 +93,7 @@ const routes = [{
     component: () => import('../views/content/KnowledgeContent.vue')
   }]
 }, {
-  path: '/resource',
+  path: '/courseware',
   redirect: {
     name: 'ResourceCategory',
   },
