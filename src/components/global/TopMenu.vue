@@ -13,7 +13,7 @@
             </el-sub-menu>
             <el-menu-item index="/course/dept">科系案例</el-menu-item>
             <el-menu-item index="/knowledge">知识库</el-menu-item>
-            <el-menu-item index="/resource">课件资源</el-menu-item>
+            <el-menu-item index="/courseware">课件资源</el-menu-item>
             <el-menu-item index="/statistic">数据分析</el-menu-item>
             <el-menu-item index="/questionnaire">问卷填写</el-menu-item>
             <el-menu-item index="/feedback">建议反馈</el-menu-item>
