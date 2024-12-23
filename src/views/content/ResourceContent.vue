@@ -4,13 +4,13 @@
  * @Autor: ZhuYichen
  * @Date: 2023-09-04 15:08:28
  * @LastEditors: ZhuYichen
- * @LastEditTime: 2024-06-04 21:11:43
+ * @LastEditTime: 2024-12-23 13:51:36
 -->
 <template>
     <div>
         <div class="banner"></div>
         <div class="show-iframe">
-            <iframe ref="myIframe" top="10px" id="iframe1" width="1600" height="900" frameborder='no' border='0' marginwidth='0' marginheight='0' scrolling='no' allowtransparency='yes' :src="'http://view.officeapps.live.com/op/view.aspx?src='+curPage.resourceUrl"></iframe>
+            <iframe ref="myIframe" top="10px" id="iframe1" width="1600" height="900" frameborder='no' border='0' marginwidth='0' marginheight='0' scrolling='no' allowtransparency='yes' :src="'https://view.officeapps.live.com/op/view.aspx?src='+curPage.resourceUrl"></iframe>
         </div>
         <div class="placeholder"></div>
     </div>

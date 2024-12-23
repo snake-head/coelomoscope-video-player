@@ -1,9 +1,11 @@
 <template>
   <div class="video-card__wrap">
-    <a :href="`/resource/${resource.id}/content`" style="display: block; width: 100%; height: 100%; text-decoration: none;">
+    <router-link 
+      :to="`/resource/${resource.id}/content`" 
+      style="display: block; width: 100%; height: 100%; text-decoration: none;">
       <div class="video-image" :style="{ backgroundImage: `url(${resource.coverImgUrl})`, backgroundSize: 'cover' }">
       </div>
-    </a>
+    </router-link>
     <div class="video-mask">
       <div class="video-stats">
         <div class="video-stats--left">
