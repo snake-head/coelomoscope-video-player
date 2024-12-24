@@ -4,9 +4,9 @@
     <div :class="{'blur-background': !isLoggedIn}">
       <el-container direction="vertical">
         <div class="switch-chart">
-            <el-carousel trigger="click" type="card" :autoplay="false">
-            <el-carousel-item v-for="image in switchCardImages" :key="image">
-              <el-image :src="image" style="height:100%;"></el-image>
+          <el-carousel trigger="click" type="card" :autoplay="false" height="500px">
+            <el-carousel-item v-for="(image, index) in switchCardImages" :key="image" @click="handleImageClick(index)">
+              <el-image :src="image" style="height:100%; width:100%; object-fit:cover"></el-image>
             </el-carousel-item>
           </el-carousel>
         </div>
@@ -131,6 +131,12 @@ const getSpecificCourseVideos = () => {
 const formatDate = (dateString) => {
   const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
   return new Date(dateString).toLocaleDateString(undefined, options);
+};
+
+const handleImageClick = (index) => {
+  if (index === 0) {
+    window.location.href = 'https://omentor.vico-lab.com:3443/course/cid202412201519'; 
+  }
 };
 
 onMounted(() => {
