@@ -21,20 +21,21 @@
         </el-checkbox-group>
       </div>
     </div>
-
-    <div class="video-display-table">
-      <div class="video-display-table-row" v-for="video in filteredVideos" :key="video.videoId">
-        <div class="video-display-table-row__item">
-          <el-link :href="`/video/${video.videoId}/play`" :underline="false">
-            <el-image :src="video.coverImgUrl" class="video-cover-image" />
-            <div class="video-date">{{ formatDate(video.createdAt) }}</div>
-          </el-link>
-          <div class="video-info">
-            <p>{{ video.videoName }}</p>
+    <div class="video-display">
+      <div class="video-display-table">
+        <div class="video-display-table-row" v-for="video in filteredVideos" :key="video.videoId">
+          <div class="video-display-table-row__item">
+            <el-link :href="`/video/${video.videoId}/play`" :underline="false">
+              <el-image :src="video.coverImgUrl" class="video-cover-image" />
+              <div class="video-date">{{ formatDate(video.createdAt) }}</div>
+            </el-link>
+            <div class="video-info">
+              <p>{{ video.videoName.replace('.mp4', '') }}</p>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </div>  
     <div class="pagination-container">
       <el-pagination
         @current-change="handleCurrentChange"
@@ -56,8 +57,6 @@ const currentPage = ref(1);
 const pageSize = ref(48); 
 
 const categories = ref([
-  { id: 'cid2403383', name: '胃镜检查术' },
-  { id: 'cid7105224', name: '大肠息肉内镜治疗术' },
   { id: 'cid7475064', name: '前列腺根治术' },
   { id: 'cid202307271405', name: '肺叶段切除' },
   { id: 'cid202308011054', name: '肾上腺切除' },
@@ -66,6 +65,7 @@ const categories = ref([
   { id: 'cid20240429', name: '肾根治性切除术' },
   { id: 'cid20240521', name: '交感神经切断术' },
   { id: 'cid20241210', name: '肝切除术' },
+  { id: 'cid202412201519', name:'精选视频'}
 ]); 
 
 const selectedCategories = ref(categories.value.map(category => category.id)); // 默认全选
@@ -155,17 +155,29 @@ onMounted(() => {
   gap: 20px;
 }
 
+.video-display {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
 .video-display-table {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center; 
-  align-items: center; 
-  margin: 0 500px; 
 }
 
+/* .video-display-table-row {
+  margin: 0 auto;
+} */
+
 .video-display-table-row__item {
-  width: 200px; 
+  width: 200px;
+  height: 110px; 
   margin: 20px;
+  margin-bottom: 80px;
   cursor: pointer; 
 }
 
