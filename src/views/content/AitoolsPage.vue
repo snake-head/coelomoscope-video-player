@@ -21,8 +21,8 @@
             fit="contain"
             class="generated-image"
             style="cursor: pointer;"
-            :preview-src-list="imageSrcList"
-            :preview-index="getImageIndex(message.image)"
+            :initial-index="getImageIndex(message.image)"
+            :preview-src-list="[message.image]"
           >
           </ElImage>
           <div v-else v-html="md.render(message.text)"></div>
@@ -149,20 +149,16 @@ const messages = computed(() => {
   return mode.value === 'chat' ? chatMessages.value : imageMessages.value;
 });
 
-// 计算属性：图片预览列表
+// 图片源列表
 const imageSrcList = computed(() => {
   return messages.value
-    .filter(message => message.image)
-    .map(message => message.image);
+    .filter(msg => msg.image)
+    .map(msg => msg.image);
 });
 
-// 方法，获取当前图片的索引
+// 获取图片索引
 const getImageIndex = (imageSrc) => {
-  console.log('imageSrcList:', imageSrcList.value);
-  console.log('Current imageSrc:', imageSrc);
-  const index = imageSrcList.value.indexOf(imageSrc);
-  console.log('Computed index:', index);
-  return index !== -1 ? index : 0;
+  return imageSrcList.value.indexOf(imageSrc);
 };
 
 // 保存历史
