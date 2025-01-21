@@ -8,15 +8,14 @@
             <el-menu-item index="/home">首页</el-menu-item>
             <el-sub-menu index="/search">
               <template #title>案例资源</template>
-              <el-menu-item index="/search" v-for="(vType) in additionalTypeList" :key="vType.id"
+              <el-menu-item index="/search" v-for="(vType) in additionalTypeList.slice(0,4)" :key="vType.id"
                 @click="typeChange(vType)">{{ vType.label }}</el-menu-item>
             </el-sub-menu>
-            <el-menu-item index="/course/dept">科系案例</el-menu-item>
             <el-menu-item index="/knowledge">知识库</el-menu-item>
             <el-menu-item index="/courseware">课件资源</el-menu-item>
             <el-menu-item index="/statistic">数据分析</el-menu-item>
-            <el-menu-item index="/questionnaire">问卷填写</el-menu-item>
-            <el-menu-item index="/feedback">建议反馈</el-menu-item>
+            <!-- <el-menu-item index="/questionnaire">问卷填写</el-menu-item>
+            <el-menu-item index="/feedback">建议反馈</el-menu-item> -->
             <el-menu-item index="/aitools">AI助手</el-menu-item>
             <div style="flex-grow: 1;" />
             <el-menu-item index="/userInfo">
@@ -109,7 +108,10 @@ const router = useRouter();
 const route = useRoute();
 const typeChange = (type) => {
   courseQueryCriteria.courseTypeId = type.id;
-  router.push({ name: 'CourseSearch' });
+  router.push({ 
+    name: 'CourseSearch',
+    query: { typeId: type.id }  // 添加 query 参数
+  });
 }
 </script>
 <style lang="css" scoped>
