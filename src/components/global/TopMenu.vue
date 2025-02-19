@@ -18,7 +18,7 @@
             <el-menu-item index="/feedback">建议反馈</el-menu-item> -->
             <el-menu-item index="/aitools">AI助手</el-menu-item>
             <div style="flex-grow: 1;" />
-            <el-menu-item index="/userInfo">
+            <el-menu-item index="/account/home">
               <el-dropdown>
                 <div class="menu-item__right">
                   <el-avatar :src="userInfo.avatar" />
@@ -47,7 +47,7 @@
                         </span>
                       </el-dropdown-item>
                       <el-divider />
-                      <el-dropdown-item>
+                      <el-dropdown-item @click="handleLogout">
                         <span>
                           <el-icon>
                             <SwitchButton />
@@ -92,6 +92,7 @@ import {
   useRouter,
   useRoute
 } from "vue-router";
+import { ElMessage } from 'element-plus';
 import { onMounted } from "vue";
 import { courseQueryCriteria } from "../../utils/global-search/course";
 import { getAllCourseType } from "../../utils/request/course";
@@ -102,6 +103,17 @@ onMounted(() => {
     .then(res => additionalTypeList.push(...res.data?.results))
     .catch(err => console.log(err))
 })
+
+const handleLogout = () => {
+
+  localStorage.removeItem('token');
+  localStorage.removeItem('openid');
+  localStorage.setItem('isLoggedIn', 'false');// 清除本地存储的登录信息
+
+  ElMessage.success('退出登录成功'); //添加提示信息
+  
+  window.location.href = window.location.origin + '/home'; // 重定向到首页
+};
 
 const additionalTypeList = [{ id: 0, name: "", label: "全部案例" }];
 const router = useRouter();
