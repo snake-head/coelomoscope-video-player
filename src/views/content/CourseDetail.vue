@@ -4,8 +4,8 @@
       <el-main>
         <div class="navigation-bar">
           <el-breadcrumb :separator-icon="ArrowRight">
-            <el-breadcrumb-item :to="{ name: 'CourseSearch' }">
-              <div @click="setQueryCourseId(courseType.id)">
+            <el-breadcrumb-item @click.prevent="setQueryCourseId(courseType.id)">
+              <div style="cursor: pointer;">
                 {{ courseType.label }}
               </div>
             </el-breadcrumb-item>
@@ -182,8 +182,15 @@ const handleSizeChange = (newSize) => {
 const changeBreadcrumbItem = (tabPaneName) => {
   currentBreadcrumbName.value = tabPaneName;
 }
+
 const setQueryCourseId = (courseTypeId) => {
   courseQueryCriteria.courseTypeId = courseTypeId ?? '';
+  router.push({
+    path: '/search',
+    query: {
+      typeId: courseTypeId ?? '0', // 确保有默认值
+    }
+  });
 }
 
 </script>
