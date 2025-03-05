@@ -174,7 +174,8 @@ onMounted(() => {
 
 .video-display-table {
   display: grid;
-  grid-template-columns: repeat(7, auto);
+  grid-template-columns: repeat(auto-fill, 320px); /* 固定列宽 */
+  grid-auto-flow: row dense; /* 自动填充 */
   gap: 20px;
   padding: 20px;
   justify-content: start;

@@ -164,6 +164,7 @@ onBeforeRouteLeave(() => {
 
 :deep(.el-main) {
   padding: 0;
-  text-align: left;
+  text-align: left; 
+  overflow:hidden;  /* 隐藏底部滚动条 */
 }
 </style>
