@@ -22,10 +22,17 @@ import {
 } from "vue-router";
 const router = useRouter();
 let reset = () => {
-  resetQueryCriteria(courseQueryCriteria);
+  // resetQueryCriteria(courseQueryCriteria);
+  courseQueryCriteria.courseName = ''; // 清空搜索框
 }
 const confirmClick = () => {
-  router.push({ name: 'CourseSearch' });
+  router.push({
+    path: '/search',
+    query: {
+      typeId: 0,
+      courseName: courseQueryCriteria.courseName
+    }
+  });
 }
 
 </script>
