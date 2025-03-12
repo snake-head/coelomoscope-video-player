@@ -8,14 +8,14 @@
             <el-menu-item index="/home">首页</el-menu-item>
             <el-sub-menu index="/search">
               <template #title>案例资源</template>
-              <el-menu-item index="/search" v-for="(vType) in additionalTypeList.slice(0,4)" :key="vType.id"
+              <el-menu-item index="/search" v-for="(vType) in additionalTypeList.slice(0, 4)" :key="vType.id"
                 @click="typeChange(vType)">{{ vType.label }}</el-menu-item>
             </el-sub-menu>
             <el-menu-item index="/knowledge">知识库</el-menu-item>
             <el-menu-item index="/courseware">课件资源</el-menu-item>
-            <el-menu-item index="/statistic">数据分析</el-menu-item>
-            <!-- <el-menu-item index="/questionnaire">问卷填写</el-menu-item>
-            <el-menu-item index="/feedback">建议反馈</el-menu-item> -->
+            <!-- <el-menu-item index="/statistic">数据分析</el-menu-item> -->
+            <!-- <el-menu-item index="/questionnaire">问卷填写</el-menu-item> -->
+            <el-menu-item index="/feedback">建议反馈</el-menu-item>
             <el-menu-item index="/aitools">AI助手</el-menu-item>
             <div style="flex-grow: 1;" />
             <el-menu-item index="/account/home">
@@ -73,7 +73,7 @@
                   <div style="padding:8px">
                     <el-dropdown-menu>
                       <el-dropdown-item v-for="(_, index) in 5" :key="index">
-                        <h4>这里是第{{ index+ 1}}条通知</h4>
+                        <h4>这里是第{{ index + 1 }}条通知</h4>
                       </el-dropdown-item>
                     </el-dropdown-menu>
                   </div>
@@ -108,10 +108,10 @@ const handleLogout = () => {
 
   localStorage.removeItem('token');
   localStorage.removeItem('openid');
-  localStorage.setItem('isLoggedIn', 'false');// 清除本地存储的登录信息
+  localStorage.setItem('isLoggedIn', 'false');// 清除登录信息
 
-  ElMessage.success('退出登录成功'); //添加提示信息
-  
+  ElMessage.success('退出登录成功'); //添加提示
+
   window.location.href = window.location.origin + '/home'; // 重定向到首页
 };
 
@@ -120,7 +120,7 @@ const router = useRouter();
 const route = useRoute();
 const typeChange = (type) => {
   courseQueryCriteria.courseTypeId = type.id;
-  router.push({ 
+  router.push({
     name: 'CourseSearch',
     query: { typeId: type.id }  // 添加 query 参数
   });

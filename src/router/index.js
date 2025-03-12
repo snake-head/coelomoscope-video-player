@@ -28,6 +28,11 @@ const routes = [{
     name: 'Callback',
     component: () => import('../views/content/Callback.vue'),
   }, {
+    path: 'feedback',
+    name: 'feedback',
+    component: () => import('../views/content/feedback.vue'),
+    meta: { requiresAuth: true }
+  }, {
     path: 'search',
     name: 'CourseSearch',
     component: () => import('../views/content/CourseSearch.vue'),
