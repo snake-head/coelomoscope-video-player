@@ -1,27 +1,18 @@
 <template>
   <div class="page-container">
-    <!-- 背景虚化效果，未登录时虚化 -->
-    <div :class="{'blur-background': !isLoggedIn}">
+    <div :class="{ 'blur-background': !isLoggedIn }">
       <el-container direction="vertical">
-        <!-- <div class="switch-chart">
-          <el-carousel trigger="click" type="card" :autoplay="false" height="500px">
-            <el-carousel-item v-for="(image, index) in switchCardImages" :key="image" @click="handleImageClick(index)">
-              <el-image :src="image" style="height:100%; width:100%; object-fit:cover"></el-image>
-            </el-carousel-item>
-          </el-carousel>
-        </div> -->
         <div class="main-container" v-if="isLoggedIn">
-          <!-- 用户已经登录后的主页面内容 -->
           <el-container class="featured-videos-container">
             <div class="tag-bar">
               <div class="tag-bar-info">
                 <span class="check-tag">
-                  <el-tag effect="plain" size="large" type="success" style="margin-top: 30px;" @click="goTOFeaturedVideo()">
+                  <el-tag effect="plain" size="large" type="success" style="margin-top: 30px;"
+                    @click="goTOFeaturedVideo()">
                     微创手术新技术操作精选视频
                   </el-tag>
                 </span>
               </div>
-              <!-- 新增视频显示区域 -->
               <div class="video-display-table-scroll">
                 <div class="video-display-table">
                   <div class="video-display-table-row" v-for="video in featuredVideos" :key="video.videoId">
@@ -32,9 +23,29 @@
                       <div class="video-info">
                         <p>{{ video.videoName }}</p>
                       </div>
-                      <!-- <div class="small-video-info">
-                        <p>{{ video.courseId }}</p>
-                      </div> -->
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </el-container>
+          <el-container class="featured-videos-container">
+            <div class="tag-bar">
+              <div class="tag-bar-info">
+                <span class="check-tag">
+                  <el-tag effect="plain" size="large" type="success" style="margin-top: 20px;">
+                    智能处理和分析功能体验
+                  </el-tag>
+                </span>
+              </div>
+              <div class="video-display-table">
+                <div class="video-display-table-row" v-for="video in intelligentVideos" :key="video.videoId">
+                  <div class="video-display-table-row__item">
+                    <el-link :href="`/video/${video.videoId}/play`" :underline="false">
+                      <el-image :src="video.coverImgUrl" class="video-cover-image" />
+                    </el-link>
+                    <div class="video-info">
+                      <p>{{ video.videoName }}</p>
                     </div>
                   </div>
                 </div>
@@ -46,49 +57,40 @@
               <div class="tag-bar-info">
                 <span class="check-tag">
                   <el-tag effect="plain" size="large" type="success" @click="courseSearchByTypeId()">
-                  {{ clazz }}
+                    {{ clazz }}
                   </el-tag>
-                  <el-alert
-                  title="点击查看全部案例术种"
-                  type="info"
-                  :closable="false"
-                  show-icon
-                  class="alert-style">
+                  <el-alert title="点击查看全部案例术种" type="info" :closable="false" show-icon class="alert-style">
                   </el-alert>
                 </span>
               </div>
-                <div class="video-cards">
+              <div class="video-cards">
                 <CourseCoverCardWithTitle :courses="latestCourses"></CourseCoverCardWithTitle>
-                </div>
               </div>
-              </el-container>
-              <!-- 新增视频封面模块 -->
-              <el-container>
-              <div class="tag-bar">
-                <div class="tag-bar-info">
+            </div>
+          </el-container>
+          <!-- 新增视频封面模块 -->
+          <el-container>
+            <div class="tag-bar">
+              <div class="tag-bar-info">
                 <span class="check-tag">
                   <el-tag effect="plain" size="large" type="success" @click="goToTotalVideo()">
-                  全部视频
+                    全部视频
                   </el-tag>
-                  <el-alert
-                  title="点击查看全部视频"
-                  type="info"
-                  :closable="false"
-                  show-icon
-                  class="alert-style">
+                  <el-alert title="点击查看全部视频" type="info" :closable="false" show-icon class="alert-style">
                   </el-alert>
                 </span>
               </div>
-                <div class="video-display-table">
-                <div class="video-display-table-row" v-for="video in specificCourseVideos.slice(0,14)" :key="video.videoId">
+              <div class="video-display-table">
+                <div class="video-display-table-row" v-for="video in specificCourseVideos.slice(0, 14)"
+                  :key="video.videoId">
                   <div class="video-display-table-row__total">
-                  <el-link :href="`/video/${video.videoId}/play`" :underline="false">
-                    <el-image :src="video.coverImgUrl" class="video-cover-image" />
-                    <div class="video-date">{{ formatDate(video.createdAt) }}</div>
-                  </el-link>
-                  <div class="totalvideo-info">
-                    <p>{{ video.videoName.replace('.mp4', '') }}</p>
-                  </div>
+                    <el-link :href="`/video/${video.videoId}/play`" :underline="false">
+                      <el-image :src="video.coverImgUrl" class="video-cover-image" />
+                      <div class="video-date">{{ formatDate(video.createdAt) }}</div>
+                    </el-link>
+                    <div class="totalvideo-info">
+                      <p>{{ video.videoName.replace('.mp4', '') }}</p>
+                    </div>
                     <div class="small-video-info">
                       <!-- <p>{{ activeVideoCourse.courseName }}</p> -->
                       <!-- <p>{{ video.courseId }}</p> -->
@@ -119,12 +121,12 @@ import { ElMessage } from 'element-plus';
 import CourseCoverCardWithTitle from '../../components/course/CourseCoverCardWithTitle.vue';
 import { courseQueryCriteria } from "../../utils/global-search/course";
 import { getCourses } from "../../utils/request/course";
-import { getAllVideos } from '../../utils/request/video'; 
+import { getAllVideos } from '../../utils/request/video';
 import { getCourseByCourseId } from "../../utils/request/course";
 
-const isLoggedIn = ref(true); 
+const isLoggedIn = ref(false);
 const openid = ref(null);
-const loginUrl = 'https://national.medevice.pro/login.html'; 
+const loginUrl = 'https://national.medevice.pro/login.html';
 const activeVideoCourse = reactive({
   courseId: "",
   courseName: "",
@@ -133,18 +135,26 @@ const courseNames = reactive({});
 
 const router = useRouter();
 const LATEST_LENGTH = 14;
-import selectedCover from '../../assets/精选封面.jpg';
-
-const switchCardImages = [
-   selectedCover,
-  "https://ts4.cn.mm.bing.net/th?id=OIP-C.mEq-DkBG0x_8Ykl4pNqAlQHaEO&w=331&h=188&c=8&rs=1&qlt=90&o=6&dpr=1.3&pid=3.1&rm=2",
-  "https://tse3-mm.cn.bing.net/th/id/OIP-C.zHrHOI1ULHd0iSWTGqd3WAHaDk?w=336&h=168&c=7&r=0&o=5&dpr=1.3&pid=1.7",
-  "https://ts1.cn.mm.bing.net/th?id=OIP-C.gKSO2Cw79snhIt_d0m3wVgHaD8&w=309&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7"
-];
 const homeVideoClassification = ["全部案例术种"];
 const latestCourses = ref([]);
-const specificCourseVideos = ref([]); 
-const featuredVideos = ref([]); 
+const specificCourseVideos = ref([]);
+const featuredVideos = ref([]);
+const intelligentVideos = ref([]);
+
+const checkLogin = async () => {
+  const token = localStorage.getItem('token');
+  const userOpenid = localStorage.getItem('openid');
+  const storedIsLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+
+  if (token && userOpenid && storedIsLoggedIn) {
+    isLoggedIn.value = true;
+    openid.value = userOpenid;
+    console.log("用户已登录");
+  } else {
+    isLoggedIn.value = false;
+    openid.value = null;
+  }
+};
 
 const getActiveVideoCourse = async (courseId) => {
   try {
@@ -156,10 +166,21 @@ const getActiveVideoCourse = async (courseId) => {
   }
 };
 
+// 存储openid并请求code
+const fetchCodeWithOpenid = (openid) => {
+  localStorage.setItem('openid', openid); // 存储 openid
+  document.cookie = `openid=${openid}; path=/`; // 设置 Cookie
+
+  const appid = 'omentor';
+  const redirectUri = encodeURIComponent(`https://omentor.vico-lab.com:3443/api/v1/callback/`); // 设置重定向地址，与平台中设置的一致
+  const authUrl = `https://www.medevice.pro/oauth2/code?appid=${appid}&openid=${openid}&redirect_uri=${redirectUri}`;
+  window.location.href = authUrl;
+};
+
 // 获取课程名称
 const fetchCourseNames = async () => {
   const courseIds = new Set(featuredVideos.value.map(video => video.courseId));
-  
+
   await Promise.all(
     Array.from(courseIds).map(async (courseId) => {
       try {
@@ -191,8 +212,41 @@ const getSpecificCourseVideos = async () => {
   try {
     const res = await getAllVideos(1, 1000);
     if (res?.data?.results) {
+      const allVideos = res.data.results;
       specificCourseVideos.value = res.data.results.reverse();
-      // 获取全部视频的课程名称
+      // 筛选特定视频
+      intelligentVideos.value = allVideos.filter(video =>
+        video.videoId === 'vid_zz1720091273' ||
+        video.videoId === 'vid_b6979cb8bed677817841bdd42d9a196d' ||
+        video.videoId === 'vid_dd768f7acf9043bc59ac56e457f1dadd_cd2c788e' ||
+        video.videoId === 'vid_202412021737' ||
+        video.videoId === 'vid_e2a61e5558c89b4a7e97200300bcc7f6_334ababd' ||
+        video.videoId === 'vid_313151a86804d8973ee9af51347cd101_9b1fc927'
+      );
+
+      // 修改特定视频的标题
+      intelligentVideos.value.forEach(video => {
+        switch (video.videoId) {
+          case 'vid_zz1720091273':
+            video.videoName = '手术场景三元组识别';
+            break;
+          case 'vid_b6979cb8bed677817841bdd42d9a196d':
+            video.videoName = '手术视频去雾增强';
+            break;
+          case 'vid_dd768f7acf9043bc59ac56e457f1dadd_cd2c788e':
+            video.videoName = '手术场景长文本描述';
+            break;
+          case 'vid_202412021737':
+            video.videoName = '手术场景语义分割';
+            break;
+          case 'vid_e2a61e5558c89b4a7e97200300bcc7f6_334ababd':
+            video.videoName = '手术场景长文本描述';
+            break;
+          case 'vid_313151a86804d8973ee9af51347cd101_9b1fc927':
+            video.videoName = '手术场景长文本描述';
+            break;
+        }
+      });
       const courseIds = new Set(specificCourseVideos.value.map(video => video.courseId));
       await Promise.all(
         Array.from(courseIds).map(async (courseId) => {
@@ -223,7 +277,7 @@ const getFeaturedVideos = () => {
     .then(res => {
       // console.log('Response data:', res); // 调试输出响应数据
       if (res && res.data && res.data.results) {
-        featuredVideos.value = res.data.results.filter(video => video.courseId === 'cid202412201519'); // 筛选类别为精选视频的视频
+        featuredVideos.value = res.data.results.filter(video => video.courseId === 'cid202412201519'); // 筛选精选视频
         // console.log('Featured videos:', featuredVideos.value);
       } else {
         console.error('Unexpected response structure:', res);
@@ -240,26 +294,32 @@ const formatDate = (dateString) => {
   return new Date(dateString).toLocaleDateString(undefined, options);
 };
 
-// const handleImageClick = (index) => {
-//   if (index === 0) {
-//     router.push('/course/cid202412201519'); // 替换为您想要跳转的网址
-//   }
-// };
-
 onMounted(() => {
-  // console.log('Component mounted, fetching data...');
-  // 直接设置 isLoggedIn 为 true，跳过 openid 校验
-  isLoggedIn.value = true;
-  getLatestCourses();
-  getSpecificCourseVideos(); // 获取特定课程的视频
-  getFeaturedVideos(); // 获取精选视频
+  console.log('Component mounted, fetching data...');
+  const urlParams = new URLSearchParams(window.location.search);
+  const openidParam = urlParams.get('openid');
+
+  checkLogin();
+
+  if (isLoggedIn.value) {
+    getLatestCourses();
+    getSpecificCourseVideos();
+    getFeaturedVideos();
+  } else if (openidParam) {
+    openid.value = openidParam;
+    localStorage.setItem('openid', openidParam);
+    console.log('Fetching code with openid:', openidParam);
+    fetchCodeWithOpenid(openidParam);
+  } else {
+    ElMessage.error('未检查到用户登录信息，请前往课题平台完成登录再进行访问。');
+  }
 });
 
 const goToTotalVideo = () => {
   router.push('/totalvideo');
 };
 
-const goTOFeaturedVideo =() => {
+const goTOFeaturedVideo = () => {
   router.push('/course/cid202412201519');
 };
 
@@ -274,12 +334,21 @@ watch(() => specificCourseVideos.value, async (videos) => {
     await getActiveVideoCourse(videos[0].courseId);
   }
 }, { immediate: true });
+
+watch(() => isLoggedIn.value, (newValue) => {
+  if (newValue) {
+    getLatestCourses();
+    getSpecificCourseVideos();
+    getFeaturedVideos();
+  }
+});
 </script>
 
 <style scoped>
 .page-container {
   position: relative;
   min-height: 100vh;
+  overflow-y: auto;
 }
 
 /* .video-display-table-scroll {
@@ -299,7 +368,7 @@ watch(() => specificCourseVideos.value, async (videos) => {
   font-size: 18px;
 }
 
-.totalvideo-info{
+.totalvideo-info {
   font-size: medium;
   font-weight: bold;
   justify-self: left;
@@ -310,12 +379,15 @@ watch(() => specificCourseVideos.value, async (videos) => {
   margin-top: 8px;
   margin-bottom: 20px;
   font-size: small;
-  position: relative; /* 确保层级正确 */
-  z-index: 1;        /* 提高层级 */
+  position: relative;
+  /* 确保层级正确 */
+  z-index: 1;
+  /* 提高层级 */
 }
 
 .blur-background {
-  filter: blur(5px); /* 背景虚化 */
+  filter: blur(5px);
+  /* 背景虚化 */
 }
 
 .switch-chart {
@@ -348,44 +420,47 @@ watch(() => specificCourseVideos.value, async (videos) => {
 .video-display-table {
   display: flex;
   flex-wrap: wrap;
-  gap: 30px;         /* 增加视频之间的间距 */
-  padding: 20px 0;   /* 添加上下内边距 */
+  gap: 30px;
+  /* 增加视频之间的间距 */
+  padding: 20px 0;
+  /* 添加上下内边距 */
 }
 
 .video-display-table-row__item {
-  position: relative; 
-  height:220px;
-  width: 300px; 
+  position: relative;
+  height: 220px;
+  width: 300px;
   margin: 18px;
   margin-bottom: 60px;
-  cursor: pointer; 
+  cursor: pointer;
 }
 
-.video-display-table-row__total{
-  position: relative; 
-  height:170px;
-  width: 240px; 
+.video-display-table-row__total {
+  position: relative;
+  height: 170px;
+  width: 240px;
   margin: 18px;
   margin-bottom: 60px;
-  cursor: pointer; 
+  cursor: pointer;
 }
 
 .video-date {
-  position: absolute; 
-  bottom: 0px; 
-  left: 0px; 
-  color: white; 
-  padding: 2px 5px; 
-  border-radius: 3px; 
-  font-size: 12px; 
+  position: absolute;
+  bottom: 0px;
+  left: 0px;
+  color: white;
+  padding: 2px 5px;
+  border-radius: 3px;
+  font-size: 12px;
 }
 
 .main-container {
   margin-top: 20px;
+  overflow: hidden;
 }
 
 .check-tag {
-  display:flex;
+  display: flex;
   align-items: center;
   cursor: pointer;
 }
@@ -415,7 +490,7 @@ watch(() => specificCourseVideos.value, async (videos) => {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: rgba(0, 0, 0, 0.5); 
+  background: rgba(0, 0, 0, 0.5);
 }
 
 .el-button {
