@@ -6,11 +6,11 @@
     <div class="video-info">
       <div class="video-info__left">
         <span class="video-name">{{ video.videoName }}</span>
-        <span class="operator-name">主刀医生：张三</span>
+        <!-- <span class="operator-name">主刀医生：张三</span> -->
         <span class="remarks">备注：XXX</span>
       </div>
       <div class="video-info__mid">
-        <span class="patient-age">受术者年龄：40-50岁</span>
+        <span class="patient-age">受术者年龄：xx</span>
       </div>
       <div class="video-info__right">
         <span class="video-length">视频时长：</span>

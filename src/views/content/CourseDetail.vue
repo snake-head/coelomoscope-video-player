@@ -27,13 +27,13 @@
                         <el-date-picker style="width:50%;" clearable v-model="operationDate" type="date"
                           placeholder="选择日期" />
                       </el-col>
-                      <el-col :span="7">
+                      <!-- <el-col :span="7">
                         <span>主刀医生</span>
                         <el-select style="width:50%;" clearable v-model="operator" filterable placeholder="选择医师">
                           <el-option v-for="doctor in doctors" :key="doctor.value" :label="doctor.label"
                             :value="doctor.value" />
                         </el-select>
-                      </el-col>
+                      </el-col> -->
                       <el-col :span="7">
                         <span>病例年龄</span>
                         <el-select style="width:50%;" clearable v-model="patientAge" filterable placeholder="选择年龄段">
@@ -63,13 +63,8 @@
           </el-tabs>
         </div>
         <div class="pagination-container">
-          <el-pagination
-            layout="total, prev, pager, next, jumper"
-            :total="totalVideos"
-            :current-page.sync="currentPage"
-            :page-size.sync="pageSize"
-            @current-change="handlePageChange"
-            @size-change="handleSizeChange">
+          <el-pagination layout="total, prev, pager, next, jumper" :total="totalVideos" :current-page.sync="currentPage"
+            :page-size.sync="pageSize" @current-change="handlePageChange" @size-change="handleSizeChange">
           </el-pagination>
         </div>
       </el-main>
@@ -159,7 +154,7 @@ const getVideos = async (courseId) => {
   try {
     const response = await getVideosByCourseId(
       { courseId, page: currentPage.value, limit: pageSize.value }
-      )
+    )
     videos.value = response.data.results;
     totalVideos.value = response.data.totalCount;  // 假设后端返回总视频数
     console.log(totalVideos.value)
@@ -215,6 +210,7 @@ const setQueryCourseId = (courseTypeId) => {
 .pagination-container {
   display: flex;
   justify-content: center;
-  padding: 16px 0;  /* 添加适当的上下间距 */
+  padding: 16px 0;
+  /* 添加适当的上下间距 */
 }
 </style>

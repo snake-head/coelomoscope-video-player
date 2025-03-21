@@ -22,7 +22,7 @@
                   <div class="course-type">{{ courseType.label }}</div>
                 </div>
                 <div class="enter-course-btn">
-                  <el-button type="primary" size="large" @click="toCourseDetail(router,courseId)">进入案例</el-button>
+                  <el-button type="primary" size="large" @click="toCourseDetail(router, courseId)">进入案例</el-button>
                 </div>
               </div>
             </div>
@@ -51,7 +51,7 @@
                 <el-descriptions-item label="所属科系">{{ courseDeptName }}</el-descriptions-item>
               </el-descriptions>
             </el-card>
-            <el-card shadow="never">
+            <!-- <el-card shadow="never">
               <el-descriptions :column="1">
                 <template #title>
                   <span class="brand-color-bar"></span>
@@ -61,7 +61,7 @@
                 </template>
                 <el-descriptions-item v-for="doctor in relatedDoctors">{{ doctor }}</el-descriptions-item>
               </el-descriptions>
-            </el-card>
+            </el-card> -->
           </div>
         </div>
       </el-main>

@@ -56,17 +56,17 @@ const handleClick = (tab, event) => {
   console.log(tab, event)
 }
 function calculateMD5(text) {
-    const hash = CryptoJS.MD5(text);
-    return hash.toString(CryptoJS.enc.Hex);
+  const hash = CryptoJS.MD5(text);
+  return hash.toString(CryptoJS.enc.Hex);
 }
 function createURLWithMD5(text) {
-    // 计算MD5哈希值
-    const hash = calculateMD5(text);
+  // 计算MD5哈希值
+  const hash = calculateMD5(text);
 
-    // 构建包含哈希值的URL
-    const url = `https://omentor.vico-lab.com:3443/videos/audio/${hash}.wav`;
+  // 构建包含哈希值的URL
+  const url = `https://omentor.vico-lab.com:3443/videos/audio/${hash}.wav`;
 
-    return url;
+  return url;
 }
 const captionTime = ref('未指定')
 const captionContent = ref('')
@@ -74,7 +74,7 @@ const audioUrl = ref('')
 const generateCaption = async () => {
   activeName.value = 'caption';
   captionTime.value = formattedTime.value;
-  
+
   // 设置初始状态
   captionContent.value = "分析中...";
 
@@ -118,7 +118,7 @@ const activeVideoQualityList = ref([]);
 const hasDataPrepared = ref(false);
 const playbackProgress = ref(0); // Default value, you can choose a suitable default index.
 
-const videoPlaybackTimes = computed(()=>store.state.videoPlaybackTimes)
+const videoPlaybackTimes = computed(() => store.state.videoPlaybackTimes)
 const formattedTime = computed(() => {
   // 先取整秒数
   const totalSeconds = Math.floor(videoPlaybackTimes.value[activeVideo.videoId]);
@@ -139,40 +139,40 @@ const formattedTime = computed(() => {
 watch(() => videoPlaybackTimes, () => {
   const currentTime = videoPlaybackTimes.value[activeVideo.videoId]
   if (activeVideo.metadata.phase) {
-    timeList.value.forEach((time, index)=>{
-      if (currentTime>time){
+    timeList.value.forEach((time, index) => {
+      if (currentTime > time) {
         playbackProgress.value = index
       }
     })
-    elements.value.forEach((element)=>{
+    elements.value.forEach((element) => {
       const id = parseInt(element.id)
-      if (!isNaN(id)){
-        if (id-1<playbackProgress.value){
-          element.style = {backgroundColor: "#caffc9"}
-        }else if(id-1==playbackProgress.value){
-          element.style = {backgroundColor: "#a9d4ff"}
-        }else{
-          element.style = {backgroundColor: "#ffffff"}
+      if (!isNaN(id)) {
+        if (id - 1 < playbackProgress.value) {
+          element.style = { backgroundColor: "#caffc9" }
+        } else if (id - 1 == playbackProgress.value) {
+          element.style = { backgroundColor: "#a9d4ff" }
+        } else {
+          element.style = { backgroundColor: "#ffffff" }
         }
-      }else{
+      } else {
         var regex = /e(-?\d+)/g;
         const sourceId = parseInt(element.id.match(regex)[0].substring(1));
-        if(sourceId-1<playbackProgress.value){
-          element.style = {  'stroke-width': '2px'}
+        if (sourceId - 1 < playbackProgress.value) {
+          element.style = { 'stroke-width': '2px' }
           element.markerEnd = MarkerType.ArrowClosed
           element.animated = false
-        }else if(sourceId-1==playbackProgress.value){
-          element.style = { stroke: '#409eff', 'stroke-width': '3px'}
+        } else if (sourceId - 1 == playbackProgress.value) {
+          element.style = { stroke: '#409eff', 'stroke-width': '3px' }
           element.animated = true
-        }else{
-          element.style = {  'stroke-width': '2px'}
+        } else {
+          element.style = { 'stroke-width': '2px' }
           element.markerEnd = MarkerType.ArrowClosed
           element.animated = false
         }
       }
     })
   }
-},{ deep: true });
+}, { deep: true });
 
 onMounted(async () => {
   await getActiveVideo();
@@ -205,7 +205,7 @@ const getActiveVideo = async () => {
     for (const key in video) {
       if (Object.hasOwnProperty.call(video, key)) {
         if (activeVideo.hasOwnProperty(key)) {
-          if(key=='metadata'&&video[key].phase){
+          if (key == 'metadata' && video[key].phase) {
             getElements(video[key].phase)
             getTimeList(video[key].phase)
           }
@@ -218,18 +218,18 @@ const getActiveVideo = async () => {
   }
 };
 
-const getTimeList = (phase)=>{
-  phase.forEach(({time})=>{
+const getTimeList = (phase) => {
+  phase.forEach(({ time }) => {
     timeList.value.push(time)
   })
 }
 
-const getElements = (phase)=>{
+const getElements = (phase) => {
   const numPhases = phase.length;
 
   for (let i = 0; i < numPhases; i++) {
     const phaseItem = phase[i];
-    const id = i+1
+    const id = i + 1
 
     const element = {
       id: id,
@@ -239,26 +239,26 @@ const getElements = (phase)=>{
       height: '68px',
 
     };
-    
-    if (i===0){
+
+    if (i === 0) {
       element.type = 'input'
       element.sourcePosition = Position.Right
-    }else if(i===numPhases-1){
+    } else if (i === numPhases - 1) {
       element.type = 'output'
       element.targetPosition = Position.Left
-    }else{
+    } else {
       element.sourcePosition = Position.Right
       element.targetPosition = Position.Left
     }
 
     elements.value.push(element);
   }
-  for (let i = 1; i < numPhases; i++){
+  for (let i = 1; i < numPhases; i++) {
     const element = {
-      id: `e${i}-${i+1}`,
+      id: `e${i}-${i + 1}`,
       source: i.toString(),
-      target: (i+1).toString(),
-      style: {  'stroke-width': '2px'},
+      target: (i + 1).toString(),
+      style: { 'stroke-width': '2px' },
       markerEnd: MarkerType.ArrowClosed,
     };
     elements.value.push(element)
@@ -354,31 +354,28 @@ panOnDrag.value = false;
     <el-container direction="horizontal">
       <el-aside width="350px">
         <el-card shadow="never">
-            <div class="title-area">
-              <div class="course-name">
-                {{ activeVideoCourse.courseName }}
-              </div>
-              <div class="course-type">
-                {{ activeVideoCourse.courseTypeName }}
-              </div>
+          <div class="title-area">
+            <div class="course-name">
+              {{ activeVideoCourse.courseName }}
             </div>
-            <div class="video-info">
-              <div class="video-name">
-                {{ activeVideo.videoName }}
-              </div>
-              <div class="operator">
-                <span class="operator__label">主刀医师：</span>
-                <span class="operator__content">刘备</span>
-              </div>
+            <div class="course-type">
+              {{ activeVideoCourse.courseTypeName }}
             </div>
-          </el-card>
+          </div>
+          <div class="video-info">
+            <div class="video-name">
+              {{ activeVideo.videoName }}
+            </div>
+            <!-- <div class="operator">
+              <span class="operator__label">主刀医师：</span>
+              <span class="operator__content">刘备</span>
+            </div> -->
+          </div>
+        </el-card>
         <div class="video-sidebar left-sidebar-bot">
           <el-card shadow="hover">
             <template #header>
-              <div
-                class="return-button"
-                @click="toCourseDetail(router, activeVideoCourse.courseId)"
-              >
+              <div class="return-button" @click="toCourseDetail(router, activeVideoCourse.courseId)">
                 <div class="return-button__item">
                   <el-icon>
                     <ArrowLeft />
@@ -393,18 +390,14 @@ panOnDrag.value = false;
               </el-tag>
               <el-divider />
               <div class="video-display-table">
-                <div
-                  class="video-display-table-row"
-                  v-for="video in otherVideoList"
-                  :key="video.videoId"
-                >
+                <div class="video-display-table-row" v-for="video in otherVideoList" :key="video.videoId">
                   <div class="video-display-table-row__item">
                     <div class="video-cover">
                       <VideoCoverCard :video="video" />
                     </div>
                     <div class="video-info">
                       <span class="video-info-name">{{ video.videoName }}</span>
-                      <span class="operator-name">主刀医生：张三</span>
+                      <!-- <span class="operator-name">主刀医生：张三</span> -->
                       <span class="remarks">备注：XXX</span>
                     </div>
                   </div>
@@ -425,65 +418,54 @@ panOnDrag.value = false;
       </el-aside>
       <el-main class="video-main">
         <div class="main-container">
-          
+
           <div class="video-area">
-            <VideoPlayer
-              ref="videoPlayer"
-              :quality="activeVideoQualityList"
-              :src="activeVideo.videoUrl"
-              :phase="activeVideo.metadata.phase"
-              :videoId="activeVideo.videoId"
-              :triplet="activeVideo.triplet"
-              v-if="hasDataPrepared"
-            ></VideoPlayer>
+            <VideoPlayer ref="videoPlayer" :quality="activeVideoQualityList" :src="activeVideo.videoUrl"
+              :phase="activeVideo.metadata.phase" :videoId="activeVideo.videoId" :triplet="activeVideo.triplet"
+              v-if="hasDataPrepared"></VideoPlayer>
           </div>
-          <div class="operation-steps" v-if="activeVideo.courseId!='cid202412201519'">
-              <div class="step-and-button">
-                <!-- <div class="info-header">手术步骤</div> -->
-                <el-button type="primary" plain @click="generateCaption">生成描述</el-button>
-                <div class="switch-button">
-                  <span class="switch-button__item">
-                    <el-switch
-                      v-model="enforceOptions.isAiIdentify"
-                      style="--el-switch-on-color: #13ce66"
-                    />
-                    <span class="switch-option-text">智能识别</span>
-                  </span>
-                  <span class="switch-button__item">
-                    <el-switch
-                      v-model="enforceOptions.isAiDehazy"
-                      style="--el-switch-on-color: #13ce66"
-                    />
-                    <span class="switch-option-text">去烟雾</span>
-                  </span>
-                </div>
+          <div class="operation-steps" v-if="activeVideo.courseId != 'cid202412201519'">
+            <div class="step-and-button">
+              <!-- <div class="info-header">手术步骤</div> -->
+              <el-button type="primary" plain @click="generateCaption">生成描述</el-button>
+              <div class="switch-button">
+                <span class="switch-button__item">
+                  <el-switch v-model="enforceOptions.isAiIdentify" style="--el-switch-on-color: #13ce66" />
+                  <span class="switch-option-text">智能识别</span>
+                </span>
+                <span class="switch-button__item">
+                  <el-switch v-model="enforceOptions.isAiDehazy" style="--el-switch-on-color: #13ce66" />
+                  <span class="switch-option-text">去烟雾</span>
+                </span>
               </div>
-              <el-tabs v-model="activeName" class="demo-tabs" @tab-click="handleClick">
-                <el-tab-pane label="手术步骤" name="step">
-                  <div class="operation-steps__content content-textaria">
-                    <div style="height: 150px">
-                      <!-- <el-steps direction="vertical" :active=playbackProgress>
+            </div>
+            <el-tabs v-model="activeName" class="demo-tabs" @tab-click="handleClick">
+              <el-tab-pane label="手术步骤" name="step">
+                <div class="operation-steps__content content-textaria">
+                  <div style="height: 150px">
+                    <!-- <el-steps direction="vertical" :active=playbackProgress>
                         <el-step v-for="({text}, index) in activeVideo.metadata.phase" :key="index" :title="text" />
                       </el-steps> -->
-                      <VueFlow v-model="elements" :class="{ dark }" class="basicflow" :default-viewport="{ zoom: 0.8 }" :min-zoom="0.2" :max-zoom="4">
-                        <Background :pattern-color="dark ? '#FFFFFB' : '#aaa'" gap="8" />
-                      </VueFlow>
-                    </div>
+                    <VueFlow v-model="elements" :class="{ dark }" class="basicflow" :default-viewport="{ zoom: 0.8 }"
+                      :min-zoom="0.2" :max-zoom="4">
+                      <Background :pattern-color="dark ? '#FFFFFB' : '#aaa'" gap="8" />
+                    </VueFlow>
                   </div>
-                </el-tab-pane>
-                <el-tab-pane label="视频描述" name="caption">
-                  <div class="video-caption-wrapper">
-                    <div class="video-time-audio">
-                      <div class="video-caption-time">时间：{{ captionTime }}</div>
-                      <!-- <audio :key="audioUrl" controls>
+                </div>
+              </el-tab-pane>
+              <el-tab-pane label="视频描述" name="caption">
+                <div class="video-caption-wrapper">
+                  <div class="video-time-audio">
+                    <div class="video-caption-time">时间：{{ captionTime }}</div>
+                    <!-- <audio :key="audioUrl" controls>
                         <source :src="audioUrl">
                       </audio> -->
-                    </div>
-                    <div class="video-caption-content">描述：{{ captionContent }}</div>
                   </div>
-                </el-tab-pane>
-              </el-tabs>
-            </div>
+                  <div class="video-caption-content">描述：{{ captionContent }}</div>
+                </div>
+              </el-tab-pane>
+            </el-tabs>
+          </div>
         </div>
       </el-main>
       <el-aside>
@@ -493,16 +475,10 @@ panOnDrag.value = false;
               <template #title>
                 <div class="info-header">受术者信息</div>
               </template>
-              <el-descriptions-item label="年龄："
-                >{{ activeVideo.surgery_info.age || '不明' }}</el-descriptions-item
-              >
+              <el-descriptions-item label="年龄：">{{ activeVideo.surgery_info.age || '不明' }}</el-descriptions-item>
               <el-descriptions-item label="性别：">{{ activeVideo.surgery_info.sex || '不明' }}</el-descriptions-item>
-              <el-descriptions-item label="身高："
-                >{{ activeVideo.surgery_info.height || 'xxx ' }}cm</el-descriptions-item
-              >
-              <el-descriptions-item label="体重："
-                >{{ activeVideo.surgery_info.weight || 'xxx ' }}kg</el-descriptions-item
-              >
+              <el-descriptions-item label="身高：">{{ activeVideo.surgery_info.height || 'xxx ' }}cm</el-descriptions-item>
+              <el-descriptions-item label="体重：">{{ activeVideo.surgery_info.weight || 'xxx ' }}kg</el-descriptions-item>
               <el-descriptions-item label="术前情况：" :span="2">
                 {{ activeVideo.surgery_info.condition || '不明' }}
               </el-descriptions-item>
@@ -512,10 +488,11 @@ panOnDrag.value = false;
             <div class="operation-brief">
               <div class="info-header">手术简介</div>
               <div class="operation-brief__content content-textaria">
-                {{activeVideo.courseId=='cid202412201519' ? activeVideo.surgery_info.introduction : activeVideoCourse.courseDescription}}
+                {{ activeVideo.courseId == 'cid202412201519' ? activeVideo.surgery_info.introduction :
+                  activeVideoCourse.courseDescription }}
               </div>
             </div>
-            
+
           </el-card>
         </div>
       </el-aside>
@@ -555,8 +532,8 @@ panOnDrag.value = false;
   flex-direction: column;
 }
 
-.main-container > div:not(:last-child),
-.main-container .el-card__body > div:not(:last-child) {
+.main-container>div:not(:last-child),
+.main-container .el-card__body>div:not(:last-child) {
   margin-bottom: 16px;
 }
 
@@ -565,7 +542,7 @@ panOnDrag.value = false;
   font-weight: bold;
 }
 
-.title-area > div {
+.title-area>div {
   margin-bottom: 4px;
 }
 
@@ -581,7 +558,7 @@ panOnDrag.value = false;
   text-indent: 2em;
 }
 
-.right-sidebar > .el-card {
+.right-sidebar>.el-card {
   margin-bottom: 8px;
 }
 
@@ -621,9 +598,9 @@ panOnDrag.value = false;
 } */
 .step-and-button {
   display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 8px;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
 }
 
 .switch-button {
@@ -680,31 +657,31 @@ panOnDrag.value = false;
 
 .video-info-name {
   max-width: 130px;
-    display: inline-block;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.video-caption-wrapper{
+.video-caption-wrapper {
   justify-items: flex-start;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
-.video-time-audio{
+.video-time-audio {
   width: 100%;
   display: flex;
   align-items: center;
 }
 
-.video-caption-time{
+.video-caption-time {
   font-weight: bold;
   margin-right: 30px;
 }
 
-.video-caption-content{
+.video-caption-content {
   text-align: left;
   margin-top: 10px;
 }

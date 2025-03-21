@@ -38,12 +38,12 @@
               <span>我的收藏</span>
             </el-menu-item>
             <el-menu-item index="/account/experience">
-             <template #title>
-               <el-icon>
-                <Document />
-              </el-icon>
-              <span>学习履历</span>
-             </template>
+              <template #title>
+                <el-icon>
+                  <Document />
+                </el-icon>
+                <span>学习履历</span>
+              </template>
             </el-menu-item>
             <el-menu-item index="/account/note">
               <el-icon>
@@ -76,9 +76,9 @@
             <el-card class="user-overview-card">
               <div class="user-overview">
                 <h3>用户数据概览</h3>
-                <p>完成课程数量：{{ completedCourses }}</p>
+                <p>完成视频数量：{{ completedCourses }}</p>
                 <p>学习时长：{{ studyDuration }} 小时</p>
-                <p>最近活动：{{ recentActivity }}</p>
+                <p>最近活动：观看了 {{ recentActivity }} 个视频</p>
               </div>
             </el-card>
 
@@ -86,7 +86,7 @@
             <el-card class="user-overview-card">
               <h3>学习进度</h3>
               <el-progress :percentage="progressPercentage" />
-              <p>已完成 {{ studycourses }} 课程</p>
+              <p>已观看 {{ completedCourses }} 个视频</p>
               <p>进度：{{ progressPercentage }}%</p>
             </el-card>
 
@@ -146,6 +146,7 @@ import { ref, onMounted, watch, nextTick } from "vue";
 import * as echarts from "echarts";
 import userInfo from '@/utils/userInfoDto.js';
 import { useRouter, useRoute } from "vue-router";
+import { getAllVideos } from "../../utils/request/video";
 
 defineProps({
   activeMenuIndex: {
@@ -177,27 +178,58 @@ onMounted(() => {
 });
 
 // 假设的用户数据
-const completedCourses = ref(7);
-const studyDuration = ref(12);
-const recentActivity = ref("完成了 7 个课程");
+const completedCourses = ref(22); // 已完成的视频数量
+const studyDuration = ref(33);
+const recentActivity = ref(8);
 
-const totalCourses = ref(10); // 假设总课程数量为10
-const studycourses = ref(7); //假设已学习课程数量为6
-const progressPercentage = ref(0); // 初始化为0
+const totalCourses = ref(0); // 视频总数量,初始化为0
+const progressPercentage = ref(0); // 初始化学习进度为0
 
-watch([studycourses, totalCourses], () => {
+// 获取视频总数
+const fetchTotalVideos = () => {
+  getAllVideos()
+    .then(res => {
+      if (res && res.data && res.data.results) {
+        totalCourses.value = res.data.results.length;
+        console.log('视频总数:', totalCourses.value);
+
+        // 获取到视频总数后计算进度百分比
+        if (totalCourses.value > 0) {
+          progressPercentage.value = parseFloat(((completedCourses.value / totalCourses.value) * 100).toFixed(1));
+        }
+      } else {
+        console.error('Unexpected response structure:', res);
+      }
+    })
+    .catch(error => {
+      console.error('Error fetching all videos:', error);
+    });
+};
+
+const getRecentMonths = () => {
+  const months = [];
+  const now = new Date();
+
+  for (let i = 5; i >= 0; i--) {
+    const month = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    months.push(`${month.getMonth() + 1}月`);
+  }
+
+  return months;
+};
+
+watch([completedCourses, totalCourses], () => {
   if (totalCourses.value > 0) {
-    progressPercentage.value = (studycourses.value / totalCourses.value) * 100;
+    progressPercentage.value = parseFloat(((completedCourses.value / totalCourses.value) * 100).toFixed(1));
   } else {
     progressPercentage.value = 0; // 防止除以零
   }
 });
 
-// 在组件挂载后计算一次
+// 在组件挂载后获取视频总数
 onMounted(() => {
-  if (totalCourses.value > 0) {
-    progressPercentage.value = (studycourses.value / totalCourses.value) * 100;
-  }
+  loadDataForCurrentRoute();
+  fetchTotalVideos(); // 调用获取视频总数的函数
 });
 const chartRef = ref(null);
 
@@ -215,7 +247,7 @@ onMounted(() => {
         tooltip: {},
         xAxis: {
           type: 'category',
-          data: ['1月', '2月', '3月', '4月', '5月', '6月']
+          data: getRecentMonths()  // 动态生成月份
         },
         yAxis: {
           type: 'value'
@@ -223,7 +255,7 @@ onMounted(() => {
         series: [{
           name: '学习时长',
           type: 'line',
-          data: [12, 15, 10, 20, 35, 25]
+          data: [3, 5, 6, 4, 8, 7]
         }]
       };
       myChart.setOption(option);
