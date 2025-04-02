@@ -18,7 +18,6 @@
 <script setup>
 import { reactive } from 'vue';
 import { ElMessage } from 'element-plus';
-import axios from '../../utils/request/axios'
 
 const feedbackForm = reactive({
   suggestion: '',
@@ -28,19 +27,22 @@ const feedbackForm = reactive({
 const submitFeedback = async () => {
   const openid = localStorage.openid || '';
 
+  // 构建包含 openid 的 URL
+  const url = `https://omentor.medevice.pro/api/v1/suggestion/?openid=${encodeURIComponent(openid)}`;
+
   try {
-    const response = await axios({
-      url: `suggestion?openid=${encodeURIComponent(openid)}`, // 通过 URL 参数传递 openid
+    console.log("发送请求到:", url);
+    const response = await fetch(url, {
       method: 'POST',
-      data: {
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
         suggestion: feedbackForm.suggestion,
         contact: feedbackForm.contact
-      }
+      }),
+      credentials: 'include'
     });
 
-    // 读取响应数据
-    console.log('响应数据:', response.data);
-
+    console.log("响应状态:", response.status);
     ElMessage({
       message: '感谢您的反馈！',
       type: 'success',
