@@ -10,6 +10,7 @@ import {
   createRouter,
   createWebHistory, createWebHashHistory
 } from 'vue-router'
+import { recaptchaManager } from '../utils/recapchamanage';
 
 // TopMenu组件的跳转依赖这里的path，如果修改需要同步
 const routes = [{
@@ -30,12 +31,17 @@ const routes = [{
   }, {
     path: 'feedback',
     name: 'feedback',
-    component: () => import('../views/content/feedback.vue'),
+    component: () => import('../views/content/FeedBack.vue'),
     meta: { requiresAuth: true }
   }, {
     path: 'search',
     name: 'CourseSearch',
     component: () => import('../views/content/CourseSearch.vue'),
+    meta: { requiresAuth: true }
+  }, {
+    path: 'recaptcha',
+    name: 'recaptcha',
+    component: () => import('../components/global/Recaptcha.vue'),
     meta: { requiresAuth: true }
   }, {
     path: '/totalvideo',
@@ -149,13 +155,24 @@ const router = createRouter({
   routes
 })
 
-router.beforeEach((to, from, next) => {
-  const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-  if (to.matched.some(record => record.meta.requiresAuth) && !isLoggedIn) {
-    next({ path: '/home' });
-  } else {
-    next();
+router.beforeEach(async (to, from, next) => {
+  const isLoggedIn = localStorage.getItem('token') || false;
+
+  if (isLoggedIn) {
+    // 比较 fullPath 来决定是否记录
+    if (from.fullPath !== to.fullPath) {
+      console.log(`记录导航: 从 ${from.fullPath} 到 ${to.fullPath}`);
+      // 传递 to.fullPath
+      const needsVerification = recaptchaManager.recordNavigation(to.fullPath);
+      if (needsVerification) {
+        console.log('Router guard: Verification needed, navigation suspended by component.');
+        // 注意：导航的挂起和恢复由组件或 recaptchaManager 内部处理
+        // 路由守卫通常只负责记录或初始检查，不直接阻止 next()
+      }
+    }
   }
+
+  next(); // 允许导航继续，由组件或 recaptchaManager 处理挂起
 });
 
 export default router

@@ -1,13 +1,9 @@
 <template>
   <div class="video-card__wrap">
-    <div class="video-image" :style="{ backgroundImage: `url(${video.coverImgUrl})` , backgroundSize: 'cover' }">
-      <el-link 
-        type="default" 
-        :href="`/video/${video.videoId}/play`" 
-        :underline="false"
-        :disabled="video.status === 2">
-        <video :src="video.videoUrl" style="width: 100%;border-radius: 6px;"></video>
-      </el-link>
+    <div class="video-image" :style="{ backgroundImage: `url(${video.coverImgUrl})`, backgroundSize: 'cover' }">
+      <div class="router-link" @click="handleClick" :class="{ 'disabled': video.status === 2 }">
+        <video :src="video.videoUrl" style="width: 100%; border-radius: 6px;"></video>
+      </div>
     </div>
     <div class="video-mask">
       <div class="video-stats">
@@ -19,34 +15,68 @@
     </div>
   </div>
 </template>
+
 <script setup>
 import { ref, onMounted } from "vue";
+import { useRouter } from "vue-router";
 import { getCourseByCourseId, getCourseTypeById } from "../../utils/request/course";
 import { ElMessage } from "element-plus";
+import { recaptchaManager } from "../../utils/recapchamanage";
+
+const router = useRouter();
+
 const props = defineProps({
   video: {
     type: Object,
     required: true,
   }
-})
+});
+
+// 修改点击处理函数
+const handleClick = () => {
+  if (props.video.status === 2) return;
+
+  const videoId = props.video.videoId;
+  console.log('点击视频:', videoId);
+
+  // 目标导航路径
+  const navigationPath = `/video/${videoId}/play`;
+
+  try {
+    // 记录导航并检查是否需要验证
+    const needVerification = recaptchaManager.recordNavigation(navigationPath);
+
+    if (needVerification) {
+      console.log('需要验证，导航已挂起');
+      // 导航已挂起，等待验证完成后自动跳转
+    } else {
+      console.log('无需验证，直接跳转');
+      // 不需要验证，直接跳转
+      window.location.href = navigationPath;
+    }
+  } catch (e) {
+    console.error('处理导航失败:', e);
+    // 出错时直接跳转
+    window.location.href = navigationPath;
+  }
+};
 
 const videoType = ref("未指定");
 onMounted(async () => {
   try {
     const course = (await getCourseByCourseId(props.video.courseId)).data.results[0];
-    videoType.value = props.video.status == 2? '视频处理中': (await getCourseTypeById(course.courseType)).data.name
+    videoType.value = props.video.status == 2 ? '视频处理中' : (await getCourseTypeById(course.courseType)).data.name
   } catch (err) {
     ElMessage.error(err.toString())
   }
-})
+});
 
 const videoDateFormat = (originDateString) => {
-  // 从后端取出的日期形如2014-11-03T18:36:51.382Z
-  // 需要格式化截取 T 之前的日期部分之后展示
   return originDateString.substring(0, originDateString.indexOf("T"));
 }
 </script>
-<style lang="css" scope>
+
+<style lang="css" scoped>
 .video-card__wrap {
   position: relative;
   border-radius: 6px;
@@ -58,7 +88,6 @@ const videoDateFormat = (originDateString) => {
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  /* margin-right: 12px; */
 }
 
 .video-stats--left {
@@ -105,5 +134,18 @@ const videoDateFormat = (originDateString) => {
   opacity: 1;
   transition: all .2s linear .2s;
   pointer-events: none;
+}
+
+.router-link {
+  cursor: pointer;
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 6px;
+}
+
+.router-link.disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 </style>

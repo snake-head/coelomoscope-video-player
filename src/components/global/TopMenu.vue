@@ -108,6 +108,9 @@ const handleLogout = () => {
 
   localStorage.removeItem('token');
   localStorage.removeItem('openid');
+  localStorage.removeItem('lastRecaptchaTime');
+  localStorage.removeItem('navigationHistory');
+  localStorage.removeItem('lastRecaptchaCheck');
   localStorage.setItem('isLoggedIn', 'false');// 清除登录信息
 
   ElMessage.success('退出登录成功'); //添加提示

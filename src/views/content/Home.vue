@@ -9,7 +9,7 @@
                 <span class="check-tag">
                   <el-tag effect="plain" size="large" type="success" style="margin-top: 30px;"
                     @click="goTOFeaturedVideo()">
-                    微创手术新技术操作精选视频
+                    微创手术新技术操作教学视频
                   </el-tag>
                 </span>
               </div>
@@ -52,6 +52,17 @@
               </div>
             </div>
           </el-container>
+          <!-- <el-container class="featured-videos-container">
+            <div class="tag-bar">
+              <div class="tag-bar-info">
+                <span class="check-tag">
+                  <el-tag effect="plain" size="large" type="success" style="margin-top: 20px;">
+                    专家医生精选推荐
+                  </el-tag>
+                </span>
+              </div>
+            </div>
+          </el-container> -->
           <el-container v-for="(clazz, index) in homeVideoClassification" :key="clazz">
             <div class="tag-bar">
               <div class="tag-bar-info">
@@ -68,7 +79,7 @@
               </div>
             </div>
           </el-container>
-          <!-- 新增视频封面模块 -->
+          <!-- 全部视频模块 -->
           <el-container>
             <div class="tag-bar">
               <div class="tag-bar-info">
@@ -86,7 +97,7 @@
                   <div class="video-display-table-row__total">
                     <el-link :href="`/video/${video.videoId}/play`" :underline="false">
                       <el-image :src="video.coverImgUrl" class="video-cover-image" />
-                      <div class="video-date">{{ formatDate(video.createdAt) }}</div>
+                      <!-- <div class="video-date">{{ formatDate(video.createdAt) }}</div> -->
                     </el-link>
                     <div class="totalvideo-info">
                       <p>{{ video.videoName.replace('.mp4', '') }}</p>
@@ -123,6 +134,7 @@ import { courseQueryCriteria } from "../../utils/global-search/course";
 import { getCourses } from "../../utils/request/course";
 import { getAllVideos } from '../../utils/request/video';
 import { getCourseByCourseId } from "../../utils/request/course";
+import { recaptchaManager } from '../../utils/recapchamanage';
 
 const isLoggedIn = ref(false);
 const openid = ref(null);
@@ -172,8 +184,10 @@ const fetchCodeWithOpenid = (openid) => {
   document.cookie = `openid=${openid}; path=/`; // 设置 Cookie
 
   const appid = 'omentor';
-  const redirectUri = encodeURIComponent(`https://omentor.vico-lab.com:3443/api/v1/callback/`); // 设置重定向地址，与平台中设置的一致
-  const authUrl = `https://www.medevice.pro/oauth2/code?appid=${appid}&openid=${openid}&redirect_uri=${redirectUri}`;
+  const redirectUri = encodeURIComponent(`https://omentor.medevice.pro/api/v1/callback/`); // 设置重定向地址
+  const authUrl = `https://national.medevice.pro/oauth2/code?appid=${appid}&openid=${openid}&redirect_uri=${redirectUri}`;
+  // 在跳转前标记这是登录过程
+  sessionStorage.setItem('isLoggingIn', 'true');
   window.location.href = authUrl;
 };
 
@@ -298,20 +312,40 @@ onMounted(() => {
   console.log('Component mounted, fetching data...');
   const urlParams = new URLSearchParams(window.location.search);
   const openidParam = urlParams.get('openid');
+  const codeParam = urlParams.get('code'); // 检查是否有code参数，表示OAuth回调
 
-  checkLogin();
+  // 检查是否是OAuth回调
+  if (codeParam && sessionStorage.getItem('isLoggingIn') === 'true') {
+    // 清除登录标记
+    sessionStorage.removeItem('isLoggingIn');
 
-  if (isLoggedIn.value) {
-    getLatestCourses();
-    getSpecificCourseVideos();
-    getFeaturedVideos();
-  } else if (openidParam) {
-    openid.value = openidParam;
-    localStorage.setItem('openid', openidParam);
-    console.log('Fetching code with openid:', openidParam);
-    fetchCodeWithOpenid(openidParam);
+    // 设置首次登录标记，让 App.vue 来处理验证码显示
+    sessionStorage.setItem('isFirstLogin', 'true');
+
+    // 处理登录成功
+    checkLogin().then(() => {
+      if (isLoggedIn.value) {
+        // 不在这里直接触发验证码
+        getLatestCourses();
+        getSpecificCourseVideos();
+        getFeaturedVideos();
+      }
+    });
   } else {
-    ElMessage.error('未检查到用户登录信息，请前往课题平台完成登录再进行访问。');
+    // 常规检查登录
+    checkLogin();
+
+    if (isLoggedIn.value) {
+      getLatestCourses();
+      getSpecificCourseVideos();
+      getFeaturedVideos();
+    } else if (openidParam) {
+      openid.value = openidParam;
+      console.log('Fetching code with openid:', openidParam);
+      fetchCodeWithOpenid(openidParam);
+    } else {
+      ElMessage.error('未检查到用户登录信息，请前往课题平台完成登录再进行访问。');
+    }
   }
 });
 
