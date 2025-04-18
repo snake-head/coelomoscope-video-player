@@ -578,7 +578,7 @@ panOnDrag.value = false;
 .video-display-table-row__item {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 15px;
 }
 
 .video-info {
